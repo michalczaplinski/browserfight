@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 class Server extends Component {
   static propTypes = {
+    id: PropTypes.string,
     peer: PropTypes.object.isRequired,
     stop: PropTypes.func.isRequired
   };
@@ -33,8 +34,8 @@ class Server extends Component {
   }
 
   render() {
-    const { peer } = this.props;
-    return <div> Server with id: {peer.id} </div>;
+    const { id } = this.props;
+    return <div> Server with id: {id} </div>;
   }
 }
 

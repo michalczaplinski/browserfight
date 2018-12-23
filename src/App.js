@@ -1,20 +1,20 @@
 import React, { Component } from "react";
 import Peer from "peerjs";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Server from "./Server";
 import Client from "./Client";
+import Spinner from "./Spinner";
 
-const Home = ({ start }) => <button onClick={() => start()}> start </button>;
+const Home = ({ start }) => (
+  <div>
+    <button onClick={() => start()}> start </button>
+  </div>
+);
 
 class App extends Component {
   state = {
-    started: false
+    serverStarted: false
   };
 
   componentDidMount() {
@@ -27,47 +27,50 @@ class App extends Component {
   }
 
   start = () => {
-    this.setState({ started: true });
+    this.setState({ serverStarted: true });
   };
 
   stop = () => {
-    this.setState({ started: false });
+    this.setState({ serverStarted: false });
   };
 
   render() {
-    const { started, id } = this.state;
+    const { serverStarted, id } = this.state;
 
     return (
       <div>
         <h1>Browserfight</h1>
-        <Router>
-          <Switch>
-            <Route
-              exact
-              path="/"
-              render={() => {
-                // TODO: this depends on the assumption that the Peer & id are available already on the App
-                if (started) return <Redirect to={`/${id}`} />;
-                return <Home start={this.start} />;
-              }}
-            />
-            <Route
-              exact
-              path="/:id"
-              render={({ match }) => {
-                if (!id) {
-                  return <div> waiting ... </div>;
-                }
-                if (started) {
-                  return <Server id={id} stop={this.stop} peer={this.peer} />;
-                }
-                return (
-                  <Client id={id} serverId={match.params.id} peer={this.peer} />
-                );
-              }}
-            />
-          </Switch>
-        </Router>
+        {!id ? (
+          <Spinner />
+        ) : (
+          <Router>
+            <Switch>
+              <Route
+                exact
+                path="/"
+                render={() => {
+                  if (serverStarted) {
+                    return <Server id={id} stop={this.stop} peer={this.peer} />;
+                  }
+                  return <Home start={this.start} />;
+                }}
+              />
+              <Route
+                exact
+                path="/:id"
+                render={({ match }) => {
+                  return (
+                    <Client
+                      id={id}
+                      serverId={match.params.id}
+                      peer={this.peer}
+                    />
+                  );
+                }}
+              />
+            </Switch>
+          </Router>
+        )}
       </div>
     );
   }
