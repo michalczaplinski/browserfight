@@ -1,80 +1,59 @@
-// import React, { Component } from "react";
-// import PropTypes from "prop-types";
-// import { Link } from "react-router-dom";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
+import { observer } from "mobx-react";
 
-// import Spinner from "../components/Spinner";
+import Spinner from "../components/Spinner";
+import Store from "./Store";
 
-// class Client extends Component {
-//   static propTypes = {
-//     peer: PropTypes.object.isRequired,
-//     id: PropTypes.string.isRequired,
-//     serverId: PropTypes.string.isRequired
-//   };
+class Client extends Component {
+  static propTypes = {
+    serverId: PropTypes.string.isRequired
+  };
 
-//   state = {
-//     loading: true,
-//     error: null
-//   };
+  constructor(props) {
+    super(props);
+    this.store = new Store({ serverId: this.props.serverId });
+  }
 
-//   componentDidMount() {
-//     const { peer, serverId } = this.props;
+  componentDidMount() {
+    this.interval = setInterval(
+      () => this.store.send({ id: this.store.peer.id, data: "blabla" }),
+      1000
+    );
+  }
 
-//     this.conn = peer.connect(serverId);
+  componentWillUnmount() {
+    this.store.peer.destroy();
+    clearInterval(this.interval);
+  }
 
-//     this.conn.on("open", () => {
-//       this.conn.on("data", data => {
-//         this.setState({ loading: false, error: null });
-//         console.log("Received from server:", data);
-//       });
+  render() {
+    const { serverId } = this.props;
 
-//       this.conn.send("Hello from client!");
+    if (this.store.loading) {
+      return <Spinner />;
+    }
 
-//       this.interval = setInterval(
-//         () => this.conn.send({ id: peer.id, data: "blabla" }),
-//         1000
-//       );
-//     });
+    if (this.store.error) {
+      return (
+        <div>
+          Could not connect to server {serverId}
+          <Link to="/">
+            <button>Back to home</button>
+          </Link>
+        </div>
+      );
+    }
 
-//     // ERROR HANDLING
-//     peer.on("error", err => {
-//       if (err.type === "peer-unavailable") {
-//         this.setState({ loading: false, error: true });
-//       }
-//       console.error(err);
-//     });
-//   }
+    return (
+      <div>
+        <div> Connected to server with id: {serverId} </div>
+        <div> Own ID: {this.store.peer.id} </div>
+        <canvas id="canvas" />
+      </div>
+    );
+  }
+}
 
-//   componentWillUnmount() {
-//     this.props.peer.destroy();
-//     clearInterval(this.interval);
-//   }
-
-//   render() {
-//     const { peer, serverId } = this.props;
-//     const { loading, error } = this.state;
-
-//     if (loading) {
-//       return <Spinner />;
-//     }
-//     if (error) {
-//       return (
-//         <div>
-//           Could not connect to server {serverId}
-//           <Link to="/">
-//             <button>Back to home</button>
-//           </Link>
-//         </div>
-//       );
-//     }
-
-//     return (
-//       <div>
-//         <div> Connected to server with id: {serverId} </div>
-//         <div> Own ID: {peer.id} </div>
-//         <canvas id="canvas" />
-//       </div>
-//     );
-//   }
-// }
-
-// export default Client;
+export default observer(Client);

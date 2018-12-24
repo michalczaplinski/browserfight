@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Server from "./server/Server";
-import Client from "./client/Client2";
+import Client from "./client/Client";
 
 const Home = ({ start }) => (
   <div>
