@@ -4,25 +4,20 @@ import { observable, decorate } from "mobx";
 class ServerStore {
   x_pos = 0;
   y_pos = 0;
-  connections = [];
-
-  peer;
+  connections = {};
   id;
+
   error;
 
-  stop() {
-    this.peer.destroy();
-  }
-
   constructor() {
-    this.peer = new Peer();
+    const peer = new Peer();
 
-    this.peer.on("open", id => {
+    peer.on("open", id => {
       this.id = id;
     });
 
-    this.peer.on("connection", conn => {
-      this.connections.push(conn);
+    peer.on("connection", conn => {
+      this.connections[conn.peer] = conn;
 
       conn.on("open", () => {
         conn.send("Hello from server");
@@ -35,7 +30,8 @@ class ServerStore {
       });
 
       conn.on("close", () => {
-        // TODO: check which connection was closed and remove it from the list of connections
+        console.log(conn);
+        delete this.connections[conn.peer];
       });
 
       // ERROR HANDLING
@@ -45,10 +41,17 @@ class ServerStore {
       });
     });
   }
+
+  broadcast(data) {
+    Object.values(this.connections).forEach(conn => {
+      conn.send(data);
+    });
+  }
 }
 
 export default decorate(ServerStore, {
   x_pos: observable,
   y_pos: observable,
-  connections: observable
+  connections: observable,
+  id: observable
 });

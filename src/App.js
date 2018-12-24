@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Peer from "peerjs";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import Server from "./server/Server2";
+import Server from "./server/Server";
 import Client from "./client/Client";
 import Spinner from "./components/Spinner";
 
