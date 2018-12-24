@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
-import Spinner from "./Spinner";
+import Spinner from "../components/Spinner";
 
 class Client extends Component {
   static propTypes = {
@@ -28,6 +28,11 @@ class Client extends Component {
       });
 
       this.conn.send("Hello from client!");
+
+      this.interval = setInterval(
+        () => this.conn.send({ id: peer.id, data: "blabla" }),
+        1000
+      );
     });
 
     // ERROR HANDLING
@@ -41,6 +46,7 @@ class Client extends Component {
 
   componentWillUnmount() {
     this.props.peer.destroy();
+    clearInterval(this.interval);
   }
 
   render() {
@@ -65,6 +71,7 @@ class Client extends Component {
       <div>
         <div> Connected to server with id: {serverId} </div>
         <div> Own ID: {peer.id} </div>
+        <canvas id="canvas" />
       </div>
     );
   }

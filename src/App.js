@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import Peer from "peerjs";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import Server from "./Server";
-import Client from "./Client";
-import Spinner from "./Spinner";
+import Server from "./server/Server2";
+import Client from "./client/Client";
+import Spinner from "./components/Spinner";
 
 const Home = ({ start }) => (
   <div>
@@ -50,7 +50,7 @@ class App extends Component {
                 path="/"
                 render={() => {
                   if (serverStarted) {
-                    return <Server id={id} stop={this.stop} peer={this.peer} />;
+                    return <Server />;
                   }
                   return <Home start={this.start} />;
                 }}

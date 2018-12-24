@@ -8,10 +8,18 @@ class Server extends Component {
     stop: PropTypes.func.isRequired
   };
 
+  state = {
+    connectedClients: []
+  };
+
   componentDidMount() {
     const { peer } = this.props;
 
     peer.on("connection", conn => {
+      this.setState(state => ({
+        connectedClients: [conn.peer, state.connectedClients]
+      }));
+
       conn.on("open", () => {
         conn.send("Hello from server");
       });
@@ -35,7 +43,16 @@ class Server extends Component {
 
   render() {
     const { id } = this.props;
-    return <div> Server with id: {id} </div>;
+    const { connectedClients } = this.state;
+    return (
+      <div>
+        <div>Server with id: {id}</div>
+        <div> connected clients: </div>
+        {connectedClients.map(client => (
+          <div key={client}> {client} </div>
+        ))}
+      </div>
+    );
   }
 }
 
