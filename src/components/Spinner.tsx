@@ -17,6 +17,6 @@ const StyledSpinner = styled.div`
   font-size: 2rem;
 `;
 
-const Spinner = () => <StyledSpinner>🌀</StyledSpinner>; //eslint-disable-line
+const Spinner = () => <StyledSpinner>🌀</StyledSpinner>;
 
 export default Spinner;

@@ -5,21 +5,22 @@ import { observer } from "mobx-react";
 
 import Spinner from "../components/Spinner";
 import Store from "./Store";
-import Game from "../shared/Game";
 
-class Client extends Component {
+type Props = {
+  serverId: string
+}
+
+class Client extends Component<Props, {}> {
   static propTypes = {
     serverId: PropTypes.string.isRequired
   };
 
-  constructor(props) {
-    super(props);
-    this.store = new Store({ serverId: this.props.serverId });
-  }
+  interval: any;
+  store = new Store({ serverId: this.props.serverId });
 
   componentDidMount() {
-    this.interval = setInterval(
-      () => this.store.send({ id: this.store.peer.id, data: "blabla" }),
+    this.interval = window.setInterval(
+      () => this.store.send({ x_pos: 0, y_pos: 0 }),
       1000
     );
   }
@@ -51,7 +52,6 @@ class Client extends Component {
       <div>
         <div> Connected to server with id: {serverId} </div>
         <div> Own ID: {this.store.peer.id} </div>
-        <Game />
       </div>
     );
   }

@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Server from "./server/Server";
 import Client from "./client/Client";
 
-const Home = ({ start }) => (
+const Home = ({ start } : { start: () => void }) => (
   <div>
     <button onClick={() => start()}> start </button>
   </div>

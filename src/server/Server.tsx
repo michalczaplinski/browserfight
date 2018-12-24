@@ -2,15 +2,19 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { observer } from "mobx-react";
 
-import Store from "./Store";
+import  Store from "./Store";
 import Spinner from "../components/Spinner";
 
-class Server extends Component {
+type Props = {
+  stop: () => void
+}
+
+class Server extends Component<Props, {}> {
   static propTypes = {
     stop: PropTypes.func.isRequired
   };
 
-  store = new Store();
+  store: Store = new Store();
 
   componentWillUnmount() {
     this.store.peer.destroy();

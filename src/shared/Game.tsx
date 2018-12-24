@@ -8,11 +8,11 @@ const Box = styled.div`
   position: absolute;
 `;
 
-const Ball = styled.div`
+const Ball = styled("div")<{top: number, left: number}>`
   display: flex;
   justify-content: center;
   align-items: center;
-  top: ${({ top }) => top}px;
+  top: ${({ top }) => top} px;
   left: ${({ left }) => left}px;
   position: relative;
   width: 30px;
@@ -20,14 +20,14 @@ const Ball = styled.div`
   background-color: blue;
 `;
 
-class Game extends Component {
+class Game extends Component<{}, {top: number, left: number}> {
   state = { top: 0, left: 0 };
 
   componentDidMount() {
     window.onkeydown = this.checkKey;
   }
 
-  checkKey = e => {
+  checkKey = (e: KeyboardEvent) => {
     console.log(e);
     const keyPr = e.keyCode; //Key code of key pressed
     if (keyPr === 39) {
