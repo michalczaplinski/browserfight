@@ -6,17 +6,18 @@ class ServerStore {
   y_pos = 0;
   connections = {};
   id;
-
   error;
 
-  constructor() {
-    const peer = new Peer();
+  peer;
 
-    peer.on("open", id => {
+  constructor() {
+    this.peer = new Peer();
+
+    this.peer.on("open", id => {
       this.id = id;
     });
 
-    peer.on("connection", conn => {
+    this.peer.on("connection", conn => {
       this.connections[conn.peer] = conn;
 
       conn.on("open", () => {
@@ -30,7 +31,6 @@ class ServerStore {
       });
 
       conn.on("close", () => {
-        console.log(conn);
         delete this.connections[conn.peer];
       });
 
@@ -53,5 +53,6 @@ export default decorate(ServerStore, {
   x_pos: observable,
   y_pos: observable,
   connections: observable,
-  id: observable
+  id: observable,
+  error: observable
 });

@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import Peer from "peerjs";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Server from "./server/Server";
-import Client from "./client/Client";
-import Spinner from "./components/Spinner";
+import Client from "./client/Client2";
 
 const Home = ({ start }) => (
   <div>
@@ -17,15 +15,6 @@ class App extends Component {
     serverStarted: false
   };
 
-  componentDidMount() {
-    this.peer = new Peer();
-
-    this.peer.on("open", id => {
-      console.log("open with ID:", id);
-      this.setState({ id });
-    });
-  }
-
   start = () => {
     this.setState({ serverStarted: true });
   };
@@ -35,42 +24,30 @@ class App extends Component {
   };
 
   render() {
-    const { serverStarted, id } = this.state;
+    const { serverStarted } = this.state;
 
     return (
       <div>
         <h1>Browserfight</h1>
-        {!id ? (
-          <Spinner />
-        ) : (
-          <Router>
-            <Switch>
-              <Route
-                exact
-                path="/"
-                render={() => {
-                  if (serverStarted) {
-                    return <Server />;
-                  }
-                  return <Home start={this.start} />;
-                }}
-              />
-              <Route
-                exact
-                path="/:id"
-                render={({ match }) => {
-                  return (
-                    <Client
-                      id={id}
-                      serverId={match.params.id}
-                      peer={this.peer}
-                    />
-                  );
-                }}
-              />
-            </Switch>
-          </Router>
-        )}
+        <Router>
+          <Switch>
+            <Route
+              exact
+              path="/"
+              render={() => {
+                if (serverStarted) {
+                  return <Server stop={this.stop} />;
+                }
+                return <Home start={this.start} />;
+              }}
+            />
+            <Route
+              exact
+              path="/:id"
+              render={({ match }) => <Client serverId={match.params.id} />}
+            />
+          </Switch>
+        </Router>
       </div>
     );
   }

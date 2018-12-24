@@ -3,33 +3,41 @@ import { observable, decorate } from "mobx";
 
 class ClientStore {
   data;
+  error;
+  loading = true;
 
   connection;
-  error;
+  peer;
 
   constructor({ serverId }) {
-    const peer = new Peer();
+    this.peer = new Peer();
 
-    this.connection = peer.connect(serverId);
+    this.connection = this.peer.connect(serverId);
 
     this.connection.on("open", () => {
+      this.loading = false;
+
+      this.connection.send("Hello from client!");
+
       this.connection.on("data", data => {
         this.data = data;
         console.log("Received from server:", data);
       });
 
-      this.connection.send("Hello from client!");
+      this.connection.on("error", err => {
+        this.error = err;
+        console.log(err);
+      });
 
-      this.interval = setInterval(
-        () => this.connection.send({ id: peer.id, data: "blabla" }),
-        1000
-      );
+      this.connection.on("close", () => {
+        this.error = "The connection was closed";
+      });
     });
 
     // ERROR HANDLING
-    peer.on("error", err => {
+    this.peer.on("error", err => {
       if (err.type === "peer-unavailable") {
-        this.setState({ loading: false, error: true });
+        this.error = err;
       }
       console.error(err);
     });
@@ -41,5 +49,7 @@ class ClientStore {
 }
 
 export default decorate(ClientStore, {
-  data: observable
+  data: observable,
+  error: observable,
+  loading: observable
 });
