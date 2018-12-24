@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 
 import Spinner from "../components/Spinner";
 import Store from "./Store";
+import Game from "../shared/Game";
 
 class Client extends Component {
   static propTypes = {
@@ -50,7 +51,7 @@ class Client extends Component {
       <div>
         <div> Connected to server with id: {serverId} </div>
         <div> Own ID: {this.store.peer.id} </div>
-        <canvas id="canvas" />
+        <Game />
       </div>
     );
   }
