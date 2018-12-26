@@ -1,33 +1,25 @@
 import Peer from "peerjs";
 import { observable } from "mobx";
 import uuid from "uuid";
-
-
-interface DataFromServer {
-  players?: {
-    [key: string]: {
-      x_pos: number
-      y_pos: number
-    }
-  }
-}
-
-interface DataFromClient {
-  x_pos: number
-  y_pos: number
-}
+import { DataFromServer, DataFromClient, Handshake, GameState, ClientGameState } from '../types';
 
 class ClientStore {
-  @observable data: DataFromServer = {};
+  id: string = uuid.v1()
+  @observable gameState: GameState = {
+    [this.id]: {
+      x_pos: 0, y_pos: 0
+    }
+  }
   @observable error: any;
   @observable loading: boolean = true;
 
+  sendInterval: any;
   connection: Peer.DataConnection;
   peer: Peer;
 
   constructor({ serverId }: { serverId: string }) {
 
-    this.peer = new Peer(uuid.v1());
+    this.peer = new Peer(this.id);
     this.connection = this.peer.connect(serverId);
 
     this.connection.on("open", () => {
@@ -36,11 +28,17 @@ class ClientStore {
 
       this.connection.send("Hello from client");
 
-      this.connection.on("data", (data: DataFromServer) => {
-        this.data = data;
+      this.connection.on("data", (data: DataFromServer | Handshake) => {
         if (data === 'Hello from server') {
           console.debug(`Received handshake from server: ${data}`);
         }
+        if (typeof data === "string") {
+          return;
+        }
+        delete data[this.peer.id]
+        this.gameState = { ...data, ...this.gameState };
+
+        console.table(data);
       });
 
       this.connection.on("error", (err: any) => {
@@ -51,6 +49,10 @@ class ClientStore {
       this.connection.on("close", () => {
         this.error = "The connection was closed";
       });
+
+      this.sendInterval = setInterval(
+        () => this.send(this.gameState[this.peer.id])
+        , 1000);
     });
 
     // ERROR HANDLING
@@ -60,10 +62,15 @@ class ClientStore {
       }
       console.error(err);
     });
+
   }
 
   send(data: DataFromClient) {
     this.connection.send(data);
+  }
+
+  updateState(data: ClientGameState) {
+    this.gameState[this.peer.id] = data;
   }
 }
 

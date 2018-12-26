@@ -26,6 +26,7 @@ class Server extends Component<Props, {}> {
   }
 
   render() {
+    const { store } = this;
     if (!this.store.id) {
       return <Spinner />;
     }
@@ -36,16 +37,20 @@ class Server extends Component<Props, {}> {
             id="client-url"
             target="_blank"
             rel="noopener noreferrer"
-            href={`${window.location.origin}/${this.store.id}`}
+            href={`${window.location.origin}/${store.id}`}
           >
-            {`${window.location.origin}/${this.store.id}`}
+            {`${window.location.origin}/${store.id}`}
           </a>
         </div>
-        <span hidden id="client-id">{this.store.id}</span>
+        <span hidden id="client-id">{store.id}</span>
         <button onClick={() => this.stop()}> stop server </button>
         <div> connected clients: </div>
-        {Object.values(this.store.connections).map(client => (
-          <div key={client.peer}> {client.peer} </div>
+        {Object.entries(store.gameState).map(([key, value]) => (
+          <div>
+            <div key={key}> {key} </div>
+            <div> X: {value.x_pos} </div>
+            <div> Y: {value.y_pos} </div>
+          </div>
         ))}
       </div>
     );

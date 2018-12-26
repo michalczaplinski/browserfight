@@ -15,23 +15,27 @@ class Client extends Component<Props, {}> {
     serverId: PropTypes.string.isRequired
   };
 
-  interval: any;
   store = new Store({ serverId: this.props.serverId });
-
-  componentDidMount() {
-    this.interval = window.setInterval(
-      () => this.store.send({ x_pos: 0, y_pos: 0 }),
-      1000
-    );
-  }
 
   componentWillUnmount() {
     this.store.peer.destroy();
-    clearInterval(this.interval);
+  }
+
+  changeX(x: string) {
+    const x_pos = parseInt(x);
+    const gameState = this.store.gameState[this.store.peer.id];
+    this.store.updateState({ x_pos, y_pos: gameState.y_pos })
+  }
+
+  changeY(y: string) {
+    const y_pos = parseInt(y);
+    const gameState = this.store.gameState[this.store.peer.id];
+    this.store.updateState({ y_pos, x_pos: gameState.x_pos })
   }
 
   render() {
     const { serverId } = this.props;
+    const { store } = this;
 
     if (this.store.loading) {
       return <Spinner />;
@@ -52,6 +56,20 @@ class Client extends Component<Props, {}> {
       <div>
         <div> Connected to server with id: <span id="server-id">{serverId}</span> </div>
         <div> Own ID: <span id="client-id">{this.store.peer.id}</span> </div>
+        <input 
+          type="number" 
+          name="X" 
+          onChange={e => this.changeX(e.target.value)}
+          value={store.gameState[store.id].x_pos} 
+        >
+        </input>
+        <input 
+          type="number" 
+          name="Y" 
+          onChange={e => this.changeY(e.target.value)}
+          value={store.gameState[store.id].y_pos} 
+        >
+        </input>
       </div>
     );
   }

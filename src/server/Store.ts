@@ -1,19 +1,20 @@
 import Peer, { DataConnection } from "peerjs";
 import { observable } from "mobx";
 import uuid from 'uuid';
+import { GameState, IConnections, DataFromServer, DataFromClient, Handshake } from '../types';
 
-interface IConnections {
-  [propName: string]: DataConnection
-}
 
 export class ServerStore {
-  @observable x_pos: number = 0;
-  @observable y_pos: number = 0;
-  @observable connections: IConnections = {};
-  @observable id: string = uuid.v1();
+  id: string = uuid.v1();
+
+  @observable gameState: GameState = {
+    [this.id]: { x_pos: 0, y_pos: 0 }
+  }
   @observable error: any;
 
+  connections: IConnections = {};
   peer: Peer;
+  broadcastInterval: any;
 
   constructor() {
 
@@ -25,20 +26,29 @@ export class ServerStore {
       conn.on("open", () => {
         console.debug(`Connection to client established`);
         conn.send("Hello from server");
+
+        this.broadcastInterval = setInterval(
+          () => this.broadcast(this.gameState),
+          1000);
       });
 
-      conn.on("data", data => {
+      conn.on("data", (data: DataFromClient | Handshake) => {
         if (data === 'Hello from client') {
           console.debug(`Received handshake from client: ${data}`);
         }
+        if (typeof data === 'string') {
+          return;
+        }
 
-        console.log("data from client", data);
-        this.x_pos = data.x_pos;
-        this.y_pos = data.y_pos;
+        this.gameState[conn.peer] = { ...data };
+
+        console.table(data);
+
       });
 
       conn.on("close", () => {
         delete this.connections[conn.peer];
+        delete this.gameState[conn.peer];
       });
 
       // ERROR HANDLING
@@ -47,13 +57,15 @@ export class ServerStore {
         console.log(err);
       });
     });
+
+
   }
 
-  // broadcast(data) {
-  //   Object.values(this.connections).forEach(conn => {
-  //     conn.send(data);
-  //   });
-  // }
+  broadcast(data: DataFromServer) {
+    Object.values(this.connections).forEach(conn => {
+      conn.send(data);
+    });
+  }
 }
 
 export default ServerStore;

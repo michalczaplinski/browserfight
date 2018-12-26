@@ -64,9 +64,10 @@ describe("Browserfight", () => {
     ])
     let seenClientMessages = new Set();
 
-    it('Check all server messages', (done) => {
-      serverPage.on('console', msg => {
+    it('Check all server messages', async (done) => {
+      serverPage.on('console', async msg => {
         if (msg.type() === 'debug') {
+          console.log(await msg.args()[0].jsonValue());
           const text = msg.text();
           expect(serverMessages).toContain(text);
           seenServerMessages.add(text);
