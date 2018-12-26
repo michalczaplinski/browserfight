@@ -1,5 +1,5 @@
 import Peer, { DataConnection } from "peerjs";
-import { extendObservable, decorate, observable } from "mobx";
+import { observable } from "mobx";
 import uuid from 'uuid';
 
 interface IConnections {
@@ -23,10 +23,15 @@ export class ServerStore {
       this.connections[conn.peer] = conn;
 
       conn.on("open", () => {
+        console.debug(`Connection to client established`);
         conn.send("Hello from server");
       });
 
       conn.on("data", data => {
+        if (data === 'Hello from client') {
+          console.debug(`Received handshake from client: ${data}`);
+        }
+
         console.log("data from client", data);
         this.x_pos = data.x_pos;
         this.y_pos = data.y_pos;

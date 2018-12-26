@@ -32,12 +32,15 @@ class ClientStore {
 
     this.connection.on("open", () => {
       this.loading = false;
+      console.debug(`Connection to server established`)
 
-      this.connection.send("Hello from client!");
+      this.connection.send("Hello from client");
 
       this.connection.on("data", (data: DataFromServer) => {
         this.data = data;
-        console.log("Received from server:", data);
+        if (data === 'Hello from server') {
+          console.debug(`Received handshake from server: ${data}`);
+        }
       });
 
       this.connection.on("error", (err: any) => {

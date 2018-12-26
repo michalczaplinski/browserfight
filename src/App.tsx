@@ -6,7 +6,7 @@ import Client from "./client/Client";
 
 const Home = ({ start } : { start: () => void }) => (
   <div>
-    <button onClick={() => start()}> start </button>
+    <button id="start-game" onClick={() => start()}> start </button>
   </div>
 );
 

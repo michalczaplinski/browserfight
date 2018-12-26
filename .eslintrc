@@ -5,5 +5,15 @@
     ],
     "rules": {
         "prettier/prettier": "error"
+    },
+    "env": {
+        "jest": true
+    },
+    "globals": {
+        "describe": true,
+        "page": true,
+        "browser": true,
+        "context": true,
+        "jestPuppeteer": true
     }
 }

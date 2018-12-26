@@ -33,6 +33,7 @@ class Server extends Component<Props, {}> {
       <div>
         <div>
           <a
+            id="client-url"
             target="_blank"
             rel="noopener noreferrer"
             href={`${window.location.origin}/${this.store.id}`}
@@ -40,6 +41,7 @@ class Server extends Component<Props, {}> {
             {`${window.location.origin}/${this.store.id}`}
           </a>
         </div>
+        <span hidden id="client-id">{this.store.id}</span>
         <button onClick={() => this.stop()}> stop server </button>
         <div> connected clients: </div>
         {Object.values(this.store.connections).map(client => (
