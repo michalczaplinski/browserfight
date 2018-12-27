@@ -46,10 +46,11 @@ class Server extends Component<Props, {}> {
         <button onClick={() => this.stop()}> stop server </button>
         <div> connected clients: </div>
         {Object.entries(store.gameState).map(([key, value]) => (
-          <div>
-            <div key={key}> {key} </div>
-            <div> X: {value.x_pos} </div>
-            <div> Y: {value.y_pos} </div>
+          <div key= { key }>
+            <div > {key} </div>
+            <div> X: {value.x} </div>
+            <div> Y: {value.y} </div>
+            <div> Z: {value.z} </div>
           </div>
         ))}
       </div>

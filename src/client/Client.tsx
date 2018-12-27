@@ -6,6 +6,12 @@ import { observer } from "mobx-react";
 import Spinner from "../components/Spinner";
 import Store from "./Store";
 
+import Player from '../three/Player';
+import Camera from '../three/Camera';
+import Floor from '../three/Floor';
+import Light from '../three/Light';
+import { ClientApplication } from '../three/Application'
+
 type Props = {
   serverId: string
 }
@@ -17,31 +23,38 @@ class Client extends Component<Props, {}> {
 
   store = new Store({ serverId: this.props.serverId });
 
+  componentDidMount() {
+    document.onmousemove = (event: MouseEvent) => {
+      const { clientX, clientY } = event;
+      this.store.send({x: clientX, y: clientY, z: 0})
+    }
+  }
+
   componentWillUnmount() {
     this.store.peer.destroy();
   }
 
-  changeX(x: string) {
-    const x_pos = parseInt(x);
-    const gameState = this.store.gameState[this.store.peer.id];
-    this.store.updateState({ x_pos, y_pos: gameState.y_pos })
-  }
+  createApplication = (element: HTMLDivElement) => {
+    let camera = new Camera();
+    let app = new ClientApplication(camera, element);
+    let player = new Player(camera)
+    let floor = new Floor();
+    let light = new Light();
 
-  changeY(y: string) {
-    const y_pos = parseInt(y);
-    const gameState = this.store.gameState[this.store.peer.id];
-    this.store.updateState({ y_pos, x_pos: gameState.x_pos })
+    app.add(player);
+    app.add(floor);
+    app.add(light);
   }
 
   render() {
     const { serverId } = this.props;
     const { store } = this;
 
-    if (this.store.loading) {
+    if (store.loading) {
       return <Spinner />;
     }
 
-    if (this.store.error) {
+    if (store.error) {
       return (
         <div>
           Could not connect to server {serverId}
@@ -55,21 +68,16 @@ class Client extends Component<Props, {}> {
     return (
       <div>
         <div> Connected to server with id: <span id="server-id">{serverId}</span> </div>
-        <div> Own ID: <span id="client-id">{this.store.peer.id}</span> </div>
-        <input 
-          type="number" 
-          name="X" 
-          onChange={e => this.changeX(e.target.value)}
-          value={store.gameState[store.id].x_pos} 
-        >
-        </input>
-        <input 
-          type="number" 
-          name="Y" 
-          onChange={e => this.changeY(e.target.value)}
-          value={store.gameState[store.id].y_pos} 
-        >
-        </input>
+        <div> Own ID: <span id="client-id">{store.peer.id}</span> </div>
+        
+        <div 
+          ref={this.createApplication} 
+          style={{
+            width: "80vw", 
+            height: "80vh", 
+            zIndex: 100
+          }}
+        />
       </div>
     );
   }

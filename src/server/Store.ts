@@ -8,7 +8,7 @@ export class ServerStore {
   id: string = uuid.v1();
 
   @observable gameState: GameState = {
-    [this.id]: { x_pos: 0, y_pos: 0 }
+    [this.id]: { x: 0, y: 0, z: 0 }
   }
   @observable error: any;
 
@@ -29,7 +29,7 @@ export class ServerStore {
 
         this.broadcastInterval = setInterval(
           () => this.broadcast(this.gameState),
-          1000);
+          1000 / 30);
       });
 
       conn.on("data", (data: DataFromClient | Handshake) => {

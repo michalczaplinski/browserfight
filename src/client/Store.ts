@@ -1,13 +1,13 @@
 import Peer from "peerjs";
 import { observable } from "mobx";
 import uuid from "uuid";
-import { DataFromServer, DataFromClient, Handshake, GameState, ClientGameState } from '../types';
+import { DataFromServer, DataFromClient, Handshake, GameState } from '../types';
 
 class ClientStore {
   id: string = uuid.v1()
   @observable gameState: GameState = {
     [this.id]: {
-      x_pos: 0, y_pos: 0
+      x: 0, y: 0, z: 0
     }
   }
   @observable error: any;
@@ -37,8 +37,6 @@ class ClientStore {
         }
         delete data[this.peer.id]
         this.gameState = { ...data, ...this.gameState };
-
-        console.table(data);
       });
 
       this.connection.on("error", (err: any) => {
@@ -50,9 +48,9 @@ class ClientStore {
         this.error = "The connection was closed";
       });
 
-      this.sendInterval = setInterval(
-        () => this.send(this.gameState[this.peer.id])
-        , 1000);
+      // this.sendInterval = setInterval(
+      //   () => this.send(this.gameState[this.peer.id])
+      //   , 1000 / 30);
     });
 
     // ERROR HANDLING
@@ -69,7 +67,7 @@ class ClientStore {
     this.connection.send(data);
   }
 
-  updateState(data: ClientGameState) {
+  updateState(data: DataFromClient) {
     this.gameState[this.peer.id] = data;
   }
 }
