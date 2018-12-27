@@ -70,11 +70,5 @@ class ClientApplication extends Application {
 
 
 // TODO: add this still
-// function shootBullet() {
-//     app.add(new Bullet(player, camera));
-// }
-
-// window.addEventListener('click', shootBullet, false);
-
 
 export { Application, ClientApplication }

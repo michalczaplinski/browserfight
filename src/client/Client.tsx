@@ -6,11 +6,12 @@ import { observer } from "mobx-react";
 import Spinner from "../components/Spinner";
 import Store from "./Store";
 
+import { ClientApplication } from '../three/Application';
 import Player from '../three/Player';
 import Camera from '../three/Camera';
 import Floor from '../three/Floor';
 import Light from '../three/Light';
-import { ClientApplication } from '../three/Application'
+import Bullet from '../three/Bullet';
 
 type Props = {
   serverId: string
@@ -44,6 +45,12 @@ class Client extends Component<Props, {}> {
     app.add(player);
     app.add(floor);
     app.add(light);
+    function shootBullet() {
+      app.add(new Bullet(player, camera));
+    }
+
+    window.addEventListener('click', shootBullet, false);
+
   }
 
   render() {
