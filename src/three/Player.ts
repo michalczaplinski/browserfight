@@ -62,8 +62,6 @@ export default class Player implements BFObject {
     var time = performance.now();
     var delta = (time - this.prevTime) / 1000;
 
-    console.log(this.moveBackward);
-
     this.velocity.x -= this.velocity.x * 10.0 * delta;
     this.velocity.z -= this.velocity.z * 10.0 * delta;
 
@@ -115,7 +113,6 @@ export default class Player implements BFObject {
   };
 
   private onKeyUp = (event: KeyboardEvent) => {
-    console.log(event.keyCode);
     switch (event.keyCode) {
       case 38: // up
       case 87: // w
