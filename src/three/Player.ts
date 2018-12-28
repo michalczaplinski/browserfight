@@ -8,12 +8,12 @@ export default class Player implements BFObject {
   yawObject: Object3D;
   PI_2: number;
   velocity: Vector3;
-  movementX: number
-  movementY: number
-  moveForward: boolean
-  moveBackward: boolean
-  moveLeft: boolean
-  moveRight: boolean
+  movementX: number = 0;
+  movementY: number = 0;
+  moveForward: boolean = false;
+  moveBackward: boolean = false;
+  moveLeft: boolean = false;
+  moveRight: boolean = false;
   prevTime: any;
   avatar: Mesh;
 
@@ -28,13 +28,6 @@ export default class Player implements BFObject {
     this.PI_2 = Math.PI / 2;
     this.velocity = new Vector3();
 
-    this.movementX = 0;
-    this.movementY = 0;
-    this.moveForward = false;
-    this.moveBackward = false;
-    this.moveLeft = false;
-    this.moveRight = false;
-
     this.prevTime = performance.now();
 
     // this is the visible player's mesh
@@ -46,13 +39,17 @@ export default class Player implements BFObject {
     this.avatar.position.z = 1;
 
     this.yawObject.add(this.avatar);
+
+    document.addEventListener('keydown', this.onKeyDown, false);
+    document.addEventListener('keyup', this.onKeyUp, false);
+    document.addEventListener('mousemove', this.onMouseMove, false);
   }
 
   get() {
     return this.yawObject;
   }
 
-  updateMouse() {
+  updateMouse = () => {
     this.yawObject.rotation.y -= this.movementX * 0.002;
     this.pitchObject.rotation.x -= this.movementY * 0.002;
     this.pitchObject.rotation.x = Math.max(
@@ -61,11 +58,11 @@ export default class Player implements BFObject {
     );
   }
 
-  updateKeyboard() {
+  updateKeyboard = () => {
     var time = performance.now();
     var delta = (time - this.prevTime) / 1000;
 
-    console.log(this.moveForward);
+    console.log(this.moveBackward);
 
     this.velocity.x -= this.velocity.x * 10.0 * delta;
     this.velocity.z -= this.velocity.z * 10.0 * delta;
@@ -96,9 +93,51 @@ export default class Player implements BFObject {
     this.updateKeyboard();
   }
 
-  updatePosition(newPositions: DataFromClient) {
-    this.get().position.setX(newPositions.x);
-    this.get().position.setY(newPositions.y);
-    this.get().position.setZ(newPositions.z);
-  }
+  private onKeyDown = (event: KeyboardEvent) => {
+    switch (event.keyCode) {
+      case 38: // up
+      case 87: // w
+        this.moveForward = true;
+        break;
+      case 37: // left
+      case 65: // a
+        this.moveLeft = true;
+        break;
+      case 40: // down
+      case 83: // s
+        this.moveBackward = true;
+        break;
+      case 39: // right
+      case 68: // d
+        this.moveRight = true;
+        break;
+    }
+  };
+
+  private onKeyUp = (event: KeyboardEvent) => {
+    console.log(event.keyCode);
+    switch (event.keyCode) {
+      case 38: // up
+      case 87: // w
+        this.moveForward = false;
+        break;
+      case 37: // left
+      case 65: // a
+        this.moveLeft = false;
+        break;
+      case 40: // down
+      case 83: // s
+        this.moveBackward = false;
+        break;
+      case 39: // right
+      case 68: // d
+        this.moveRight = false;
+        break;
+    }
+  };
+
+  private onMouseMove = (event: MouseEvent) => {
+    this.movementX = event.movementX || 0;
+    this.movementY = event.movementY || 0;
+  };
 }

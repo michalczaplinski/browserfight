@@ -30,7 +30,7 @@ export interface IConnections {
 
 export interface BFObject {
     get?: () => Object3D
-    updatePosition?: (newPosition: DataFromClient) => void
+    update?: () => void
 }
 
 export type Handshake = string

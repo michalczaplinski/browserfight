@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { observer } from "mobx-react";
 
 import Spinner from "../components/Spinner";
-import Store from "./Store";
+import Store from "../stores/ClientStore";
 
 import { ClientApplication } from '../three/Application';
 import Player from '../three/Player';
@@ -24,13 +24,6 @@ class Client extends Component<Props, {}> {
 
   store = new Store({ serverId: this.props.serverId });
 
-  componentDidMount() {
-    document.onmousemove = (event: MouseEvent) => {
-      const { clientX, clientY } = event;
-      this.store.send({x: clientX, y: clientY, z: 0})
-    }
-  }
-
   componentWillUnmount() {
     this.store.peer.destroy();
   }
@@ -45,6 +38,7 @@ class Client extends Component<Props, {}> {
     app.add(player);
     app.add(floor);
     app.add(light);
+
     function shootBullet() {
       app.add(new Bullet(player, camera));
     }

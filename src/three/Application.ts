@@ -1,7 +1,7 @@
 import { Scene, WebGLRenderer, Fog } from 'three';
 
 import Camera from './Camera';
-import { DataFromClient, BFObject } from '../types';
+import { BFObject } from '../types';
 
 class Application {
 
@@ -16,7 +16,7 @@ class Application {
         this.camera = camera;
     }
 
-    //TODO we could probably optimize by not adding the objects twice...
+    //TODO: we could probably optimize by not adding the objects twice...
     add(obj: BFObject) {
         this.objects.push(obj);
         if (typeof obj.get === 'function') {
@@ -29,10 +29,8 @@ class ClientApplication extends Application {
 
     renderer: WebGLRenderer;
 
-    //TODO: Pass the DOM node where we initialize the App
     constructor(camera: Camera, node: HTMLDivElement | null) {
         super(camera);
-        // TODO: put the renderer into its own class and handleResize there
         window.addEventListener('resize', () => this.handleResize(), false);
         this.renderer = new WebGLRenderer();
         this.renderer.setClearColor(0xffffff);
@@ -55,20 +53,18 @@ class ClientApplication extends Application {
         requestAnimationFrame(() => {
             this.run();
         });
-        // this.update();
+        this.update();
         this.renderer.render(this.scene, this.camera);
     }
 
-    update(newPositions: DataFromClient) {
+    update() {
         this.objects.forEach(object => {
-            if (typeof object.updatePosition === 'function') {
-                object.updatePosition(newPositions);
+            if (typeof object.update === 'function') {
+                object.update();
             }
         });
     }
 }
 
-
-// TODO: add this still
 
 export { Application, ClientApplication }

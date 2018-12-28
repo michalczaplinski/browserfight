@@ -10,9 +10,9 @@ export default class Bullet {
   mesh: Mesh;
   direction: Vector3 = new Vector3();
 
-  // TODO i need to decouple the constructor from the controls
+  // TODO: i need to decouple the constructor from the controls
   constructor(player: Player, camera: Camera) {
-    // TODO remember that the bullet orientation needs to be set as well
+    // TODO: remember that the bullet orientation needs to be set as well
     this.geometry = new BoxGeometry(1, 1, 1);
     this.material = new MeshBasicMaterial({ color: 0x222222 });
     this.mesh = new Mesh(this.geometry, this.material);
@@ -29,13 +29,7 @@ export default class Bullet {
     this.mesh.translateOnAxis(this.direction, 20);
   }
 
-  updatePosition(newPositions: DataFromClient) {
-    this.get().position.setX(newPositions.x);
-    this.get().position.setY(newPositions.y);
-    this.get().position.setZ(newPositions.z);
-  }
-
-  // TODO add the mesh getter setter to an Abstract Base Class
+  // TODO: add the mesh getter setter to an Abstract Base Class
   get() {
     return this.mesh;
   }

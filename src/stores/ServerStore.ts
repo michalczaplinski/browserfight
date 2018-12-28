@@ -42,8 +42,6 @@ export class ServerStore {
 
         this.gameState[conn.peer] = { ...data };
 
-        console.table(data);
-
       });
 
       conn.on("close", () => {

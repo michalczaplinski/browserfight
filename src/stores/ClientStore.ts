@@ -48,9 +48,6 @@ class ClientStore {
         this.error = "The connection was closed";
       });
 
-      // this.sendInterval = setInterval(
-      //   () => this.send(this.gameState[this.peer.id])
-      //   , 1000 / 30);
     });
 
     // ERROR HANDLING

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { observer } from "mobx-react";
 
-import  Store from "./Store";
+import Store from "../stores/ServerStore";
 import Spinner from "../components/Spinner";
 
 type Props = {
