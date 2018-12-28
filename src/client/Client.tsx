@@ -7,11 +7,6 @@ import Spinner from "../components/Spinner";
 import Store from "../stores/ClientStore";
 
 import { ClientApplication } from '../three/Application';
-import Player from '../three/Player';
-import Camera from '../three/Camera';
-import Floor from '../three/Floor';
-import Light from '../three/Light';
-import Bullet from '../three/Bullet';
 
 type Props = {
   serverId: string
@@ -29,22 +24,7 @@ class Client extends Component<Props, {}> {
   }
 
   createApplication = (element: HTMLDivElement) => {
-    let camera = new Camera();
-    let app = new ClientApplication(camera, element);
-    let player = new Player(camera)
-    let floor = new Floor();
-    let light = new Light();
-
-    app.add(player);
-    app.add(floor);
-    app.add(light);
-
-    function shootBullet() {
-      app.add(new Bullet(player, camera));
-    }
-
-    window.addEventListener('click', shootBullet, false);
-
+    let app = new ClientApplication(element, this.store);
   }
 
   render() {
@@ -66,11 +46,7 @@ class Client extends Component<Props, {}> {
       );
     }
 
-    return (
-      <div>
-        <div> Connected to server with id: <span id="server-id">{serverId}</span> </div>
-        <div> Own ID: <span id="client-id">{store.peer.id}</span> </div>
-        
+    return (   
         <div 
           ref={this.createApplication} 
           style={{
@@ -78,7 +54,9 @@ class Client extends Component<Props, {}> {
             height: "80vh", 
             zIndex: 100
           }}
-        />
+        >
+          <div> Connected to server with id: <span id="server-id">{serverId}</span> </div>
+          <div> Own ID: <span id="client-id">{store.peer.id}</span> </div>
       </div>
     );
   }

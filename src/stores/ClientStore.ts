@@ -58,6 +58,8 @@ class ClientStore {
       console.error(err);
     });
 
+    this.sendInterval = setInterval(() => this.send(this.gameState[this.peer.id]))
+
   }
 
   send(data: DataFromClient) {
