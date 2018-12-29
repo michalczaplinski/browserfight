@@ -50,8 +50,8 @@ class Client extends Component<Props, {}> {
         <div 
           ref={this.createApplication} 
           style={{
-            width: "80vw", 
-            height: "80vh", 
+            width: "100vw", 
+            height: "100vh", 
             zIndex: 100
           }}
         >
