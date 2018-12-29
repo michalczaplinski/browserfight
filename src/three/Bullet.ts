@@ -1,7 +1,6 @@
 import { BoxGeometry, MeshBasicMaterial, Mesh, PerspectiveCamera, Vector3 } from "three";
 import Player from "./Player";
 import Camera from "./Camera";
-import { DataFromClient } from "../types";
 
 export default class Bullet {
 

@@ -6,10 +6,11 @@ import Floor from './Floor';
 import Light from './Light';
 import Bullet from './Bullet';
 
-import { BFObject } from '../types';
+import { BFObject, BFElement } from '../types';
 import ClientStore from '../stores/ClientStore';
 import ServerStore from '../stores/ServerStore';
 import { ResizeListener } from './ResizeListener';
+import addPointerLock from '../utils/pointerLock';
 
 export default class Application {
 
@@ -22,7 +23,7 @@ export default class Application {
     floor: Floor;
     light: Light;
 
-    constructor(node: HTMLDivElement | null, store: ClientStore | ServerStore) {
+    constructor(node: BFElement, store: ClientStore | ServerStore) {
         this.store = store;
 
         this.renderer = new WebGLRenderer();
@@ -52,10 +53,10 @@ export default class Application {
 
         window.addEventListener('click', shootBullet, false);
 
-        if (node) {
-            node.appendChild(this.renderer.domElement);
-            this.run();
-        }
+        addPointerLock(node)
+        node.appendChild(this.renderer.domElement);
+        this.run();
+
     }
 
     add(obj: BFObject) {

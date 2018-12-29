@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import Store from "../stores/ServerStore";
 import Spinner from "../components/Spinner";
 import Application from "../three/Application";
+import { BFElement } from "../types";
 
 type Props = {
   stop: () => void
@@ -21,7 +22,7 @@ class Server extends Component<Props, {}> {
     this.store.peer.destroy();
   }
 
-  createApplication = (element: HTMLDivElement) => {
+  createApplication = (element: HTMLDivElement & BFElement) => {
     let app = new Application(element, this.store);
   }
 

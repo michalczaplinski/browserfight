@@ -1,7 +1,7 @@
 import Peer, { DataConnection } from "peerjs";
 import { observable } from "mobx";
 import uuid from 'uuid';
-import { GameState, IConnections, DataFromServer, DataFromClient, Handshake } from '../types';
+import { GameState, IConnections, ClientGameState, GameStateFromServer, DataFromServer, DataFromClient, isBFEvent } from '../types';
 
 
 export class ServerStore {
@@ -32,12 +32,14 @@ export class ServerStore {
           1000 / 30);
       });
 
-      conn.on("data", (data: DataFromClient | Handshake) => {
+      conn.on("data", (data: DataFromClient) => {
         if (data === 'Hello from client') {
           console.debug(`Received handshake from client: ${data}`);
-        }
-        if (typeof data === 'string') {
           return;
+        }
+        if (isBFEvent(data)) {
+          console.log(data);
+          return
         }
 
         this.gameState[conn.peer] = { ...data };
@@ -57,13 +59,13 @@ export class ServerStore {
     });
   }
 
-  broadcast(data: DataFromServer) {
+  broadcast(data: GameStateFromServer) {
     Object.values(this.connections).forEach(conn => {
       conn.send(data);
     });
   }
 
-  updateState(data: DataFromClient) {
+  updateState(data: ClientGameState) {
     this.gameState[this.peer.id] = data;
   }
 }

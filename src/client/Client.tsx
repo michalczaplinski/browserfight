@@ -7,6 +7,7 @@ import Spinner from "../components/Spinner";
 import Store from "../stores/ClientStore";
 
 import Application from '../three/Application';
+import { BFElement } from "../types";
 
 type Props = {
   serverId: string
@@ -23,7 +24,7 @@ class Client extends Component<Props, {}> {
     this.store.peer.destroy();
   }
 
-  createApplication = (element: HTMLDivElement) => {
+  createApplication = (element: HTMLDivElement & BFElement) => {
     let app = new Application(element, this.store);
   }
 
