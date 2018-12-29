@@ -55,14 +55,16 @@ export class ServerStore {
         console.log(err);
       });
     });
-
-
   }
 
   broadcast(data: DataFromServer) {
     Object.values(this.connections).forEach(conn => {
       conn.send(data);
     });
+  }
+
+  updateState(data: DataFromClient) {
+    this.gameState[this.peer.id] = data;
   }
 }
 

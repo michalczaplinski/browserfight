@@ -8,60 +8,44 @@ import Bullet from './Bullet';
 
 import { BFObject } from '../types';
 import ClientStore from '../stores/ClientStore';
+import ServerStore from '../stores/ServerStore';
+import { ResizeListener } from './ResizeListener';
 
-class Application {
-
-    objects: BFObject[];
-    scene: Scene;
-
-    constructor() {
-        this.objects = [];
-        this.scene = new Scene();
-        this.scene.fog = new Fog(0xffffff, 0, 2000);
-    }
-
-    //TODO: we could probably optimize by not adding the objects twice...
-    add(obj: BFObject) {
-        this.objects.push(obj);
-        if (typeof obj.get === 'function') {
-            this.scene.add(obj.get());
-        }
-    }
-}
-
-class ClientApplication extends Application {
+export default class Application {
 
     renderer: WebGLRenderer;
-    store: ClientStore;
+    objects: BFObject[];
+    scene: Scene;
+    store: ClientStore | ServerStore;
     camera: Camera;
     player: Player;
     floor: Floor;
     light: Light;
 
-    constructor(node: HTMLDivElement | null, store: ClientStore) {
-        super();
-
+    constructor(node: HTMLDivElement | null, store: ClientStore | ServerStore) {
         this.store = store;
-
-        window.addEventListener('resize', () => this.handleResize(), false);
 
         this.renderer = new WebGLRenderer();
         this.renderer.setClearColor(0xffffff);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
 
+        this.objects = [];
+        this.scene = new Scene();
+        this.scene.fog = new Fog(0xffffff, 0, 2000);
         this.camera = new Camera();
         this.player = new Player(this.camera)
         this.floor = new Floor();
         this.light = new Light();
-        const app = this
 
-        app.add(this.player);
-        app.add(this.floor);
-        app.add(this.light);
+        this.add(this.player);
+        this.add(this.floor);
+        this.add(this.light);
+
+        new ResizeListener(this.camera, this.renderer)
 
         const shootBullet = () => {
-            app.add(new Bullet(this.player, this.camera));
+            this.add(new Bullet(this.player, this.camera));
             //TODO: destroy the bullet object after a few secs 
             // in order to garbage collect
         }
@@ -74,10 +58,11 @@ class ClientApplication extends Application {
         }
     }
 
-    handleResize = () => {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+    add(obj: BFObject) {
+        this.objects.push(obj);
+        if (typeof obj.get === 'function') {
+            this.scene.add(obj.get());
+        }
     }
 
     run = () => {
@@ -98,6 +83,3 @@ class ClientApplication extends Application {
         this.store.updateState({ x, y, z })
     }
 }
-
-
-export { Application, ClientApplication }

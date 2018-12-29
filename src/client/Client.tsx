@@ -6,7 +6,7 @@ import { observer } from "mobx-react";
 import Spinner from "../components/Spinner";
 import Store from "../stores/ClientStore";
 
-import { ClientApplication } from '../three/Application';
+import Application from '../three/Application';
 
 type Props = {
   serverId: string
@@ -24,7 +24,7 @@ class Client extends Component<Props, {}> {
   }
 
   createApplication = (element: HTMLDivElement) => {
-    let app = new ClientApplication(element, this.store);
+    let app = new Application(element, this.store);
   }
 
   render() {

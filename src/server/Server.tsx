@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 
 import Store from "../stores/ServerStore";
 import Spinner from "../components/Spinner";
+import Application from "../three/Application";
 
 type Props = {
   stop: () => void
@@ -18,6 +19,10 @@ class Server extends Component<Props, {}> {
 
   componentWillUnmount() {
     this.store.peer.destroy();
+  }
+
+  createApplication = (element: HTMLDivElement) => {
+    let app = new Application(element, this.store);
   }
 
   stop() {
@@ -53,6 +58,14 @@ class Server extends Component<Props, {}> {
             <div> Z: {value.z} </div>
           </div>
         ))}
+        <div
+          ref={this.createApplication}
+          style={{
+            width: "100vw",
+            height: "100vh",
+            zIndex: 100
+          }}
+        />
       </div>
     );
   }
