@@ -51,14 +51,14 @@ export interface BFObject {
 type HandshakeFromClient = "Hello from client"
 type HandshakeFromServer = "Hello from server"
 
-type BFEvent = {
-    type: 'createPlayer' | 'destroyPlayer'
-    data?: {}
-}
+// type BFEvent = {
+//     type: 'createPlayer' | 'destroyPlayer'
+//     data?: {}
+// }
 
-export type DataFromServer = GameStateFromServer | HandshakeFromServer | BFEvent
-export type DataFromClient = ClientGameState | HandshakeFromClient | BFEvent
+export type DataFromServer = GameStateFromServer | HandshakeFromServer
+export type DataFromClient = ClientGameState | HandshakeFromClient
 
-export function isBFEvent(event: DataFromClient | DataFromServer): event is BFEvent {
-    return (event as BFEvent).data !== undefined
-}
+// export function isBFEvent(event: DataFromClient | DataFromServer): event is BFEvent {
+//     return (event as BFEvent).data !== undefined
+// }

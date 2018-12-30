@@ -6,7 +6,7 @@
       "esnext"
     ],
     "experimentalDecorators": true,
-    "target": "es2015",
+    "target": "es2016",
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
