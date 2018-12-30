@@ -1,17 +1,17 @@
 import { DataConnection } from "peerjs";
-import { Object3D, HemisphereLight } from 'three';
+import { Object3D } from 'three';
 
 export interface BFDocument extends Document {
-    pointerLockElement: HTMLElement
+    pointerLockElement: Element
     onpointerlockchange: Function
     pointerlockchange: Event
 
-    mozPointerLockElement: HTMLElement
+    mozPointerLockElement: Element
     onmozpointerlockchange: Function
     mozpointerlockchange: Event
 }
 
-export interface BFElement extends HTMLElement {
+export interface BFElement extends Element {
     requestPointerLock: Function
     mozRequestPointerLock: Function
 }

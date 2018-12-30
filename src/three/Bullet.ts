@@ -18,7 +18,7 @@ export default class Bullet {
 
     this.mesh.position.setX(player.get().position.x);
     // 7 is an arbitrary offset here
-    this.mesh.position.setY(player.get().position.y + 7);
+    this.mesh.position.setY(player.get().position.y - 5);
     this.mesh.position.setZ(player.get().position.z);
     this.direction = camera.getWorldDirection(this.direction);
     // this.mesh.translateOnAxis(camera.getWorldDirection())

@@ -1,20 +1,32 @@
 import { BFElement, BFDocument } from '../types';
 
-export default function addPointerLock(element: BFElement) {
+export default (() => {
 
-    const document = window.document as BFDocument;
+  let hasLock = false;
+
+  const document = window.document as BFDocument;
+  const element = document.documentElement as unknown as BFElement;
+
+  if (hasLock) () => { };
+
+  return () => {
 
     function lockChangeAlert() {
-        if (document.pointerLockElement === element ||
-            document.mozPointerLockElement === element) {
-            console.log('The pointer lock status is now locked');
-        } else {
-            console.log('The pointer lock status is now unlocked');
-        }
+      if (
+        document.pointerLockElement === element
+        || document.mozPointerLockElement === element
+      ) {
+        hasLock = true;
+        console.log('The pointer lock status is now locked');
+      } else {
+        hasLock = false;
+        console.log('The pointer lock status is now unlocked');
+      }
     }
 
     function lockError() {
-        alert("Pointer lock failed");
+      alert("Pointer lock failed");
+      hasLock = false;
     }
 
     document.addEventListener('pointerlockchange', lockChangeAlert, false);
@@ -24,9 +36,17 @@ export default function addPointerLock(element: BFElement) {
     document.addEventListener('mozpointerlockerror', lockError, false);
 
     element.requestPointerLock = element.requestPointerLock ||
-        element.mozRequestPointerLock;
+      element.mozRequestPointerLock;
 
-    element.addEventListener('click', () => {
-        element.requestPointerLock()
-    })
-}
+    element.requestPointerLock();
+
+    if (!hasLock) {
+      hasLock = true;
+      window.addEventListener('click', () => {
+        if (!hasLock) {
+          element.requestPointerLock();
+        }
+      })
+    }
+  }
+})()

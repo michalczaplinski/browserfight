@@ -1,4 +1,4 @@
-import { Scene, WebGLRenderer, Fog } from 'three';
+import { Scene, WebGLRenderer, Fog, Mesh, RingBufferGeometry, MeshBasicMaterial, AdditiveBlending, DoubleSide } from 'three';
 
 import Camera from './Camera';
 import Player from './Player';
@@ -10,6 +10,7 @@ import { BFObject, BFElement } from '../types';
 import ClientStore from '../stores/ClientStore';
 import ServerStore from '../stores/ServerStore';
 import { ResizeListener } from './ResizeListener';
+import Crosshair from './Crosshair';
 import addPointerLock from '../utils/pointerLock';
 
 export default class Application {
@@ -22,6 +23,7 @@ export default class Application {
     player: Player;
     floor: Floor;
     light: Light;
+    crosshair: Crosshair;
 
     constructor(node: BFElement, store: ClientStore | ServerStore) {
         this.store = store;
@@ -35,6 +37,9 @@ export default class Application {
         this.scene = new Scene();
         this.scene.fog = new Fog(0xffffff, 0, 2000);
         this.camera = new Camera();
+        this.crosshair = new Crosshair();
+        this.camera.add(this.crosshair.get());
+
         this.player = new Player(this.camera)
         this.floor = new Floor();
         this.light = new Light();
@@ -52,10 +57,12 @@ export default class Application {
         }
 
         window.addEventListener('click', shootBullet, false);
+        addPointerLock();
 
-        addPointerLock(node)
-        node.appendChild(this.renderer.domElement);
-        this.run();
+        if (node) {
+            node.appendChild(this.renderer.domElement);
+            this.run();
+        }
 
     }
 

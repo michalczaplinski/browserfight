@@ -1,4 +1,4 @@
-import { Object3D, Vector3, Mesh, CubeGeometry, MeshPhongMaterial } from "three";
+import { Object3D, Vector3, Mesh, CubeGeometry, MeshPhongMaterial, LineBasicMaterial, Geometry, Line } from "three";
 import { BFObject } from "../types";
 import Camera from "./Camera";
 
@@ -22,7 +22,7 @@ export default class Player implements BFObject {
     this.pitchObject.add(camera);
 
     this.yawObject = new Object3D();
-    this.yawObject.position.y = 10;
+    this.yawObject.position.y = 30;
     this.yawObject.add(this.pitchObject);
 
     this.PI_2 = Math.PI / 2;
@@ -35,8 +35,8 @@ export default class Player implements BFObject {
       new CubeGeometry(20, 20, 20),
       new MeshPhongMaterial({ color: 0x222222 })
     );
-    this.avatar.position.y = 10;
-    this.avatar.position.z = 1;
+    this.avatar.position.y = 0;
+    this.avatar.position.z = -10;
 
     this.yawObject.add(this.avatar);
 
