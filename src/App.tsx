@@ -27,28 +27,25 @@ class App extends Component {
     const { serverStarted } = this.state;
 
     return (
-      <div>
-        <h1>Browserfight</h1>
-        <Router>
-          <Switch>
-            <Route
-              exact
-              path="/"
-              render={() => {
-                if (serverStarted) {
-                  return <Server stop={this.stop} />;
-                }
-                return <Home start={this.start} />;
-              }}
-            />
-            <Route
-              exact
-              path="/:id"
-              render={({ match }) => <Client serverId={match.params.id} />}
-            />
-          </Switch>
-        </Router>
-      </div>
+      <Router>
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={() => {
+              if (serverStarted) {
+                return <Server stop={this.stop} />;
+              }
+              return <Home start={this.start} />;
+            }}
+          />
+          <Route
+            exact
+            path="/:id"
+            render={({ match }) => <Client serverId={match.params.id} />}
+          />
+        </Switch>
+      </Router>
     );
   }
 }

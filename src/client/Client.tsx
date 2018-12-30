@@ -8,6 +8,7 @@ import Store from "../stores/ClientStore";
 
 import Application from '../three/Application';
 import { BFElement } from "../types";
+import HUD from "../components/HUD";
 
 type Props = {
   serverId: string
@@ -47,17 +48,15 @@ class Client extends Component<Props, {}> {
       );
     }
 
-    return (   
-        <div 
-          ref={this.createApplication} 
-          style={{
-            width: "100vw", 
-            height: "100vh", 
-            zIndex: 100
-          }}
-        >
-          <div> Connected to server with id: <span id="server-id">{serverId}</span> </div>
+    return (
+      <div>
+        <HUD>
+          <div> Connected to server with id: 
+            <span id="server-id">{serverId}</span> 
+          </div>
           <div> Own ID: <span id="client-id">{store.peer.id}</span> </div>
+        </HUD>
+        <div ref={this.createApplication}/>
       </div>
     );
   }
