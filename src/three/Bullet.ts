@@ -8,12 +8,13 @@ export default class Bullet {
   material: MeshBasicMaterial;
   mesh: Mesh;
   direction: Vector3 = new Vector3();
+  position: Vector3 = new Vector3();
 
   // TODO: i need to decouple the constructor from the controls
   constructor(player: Player, camera: Camera) {
     // TODO: remember that the bullet orientation needs to be set as well
     this.geometry = new BoxGeometry(1, 1, 1);
-    this.material = new MeshBasicMaterial({ color: 0x222222 });
+    this.material = new MeshBasicMaterial({ color: 'red' });
     this.mesh = new Mesh(this.geometry, this.material);
 
     this.mesh.position.setX(player.get().position.x);
@@ -21,7 +22,6 @@ export default class Bullet {
     this.mesh.position.setY(player.get().position.y - 5);
     this.mesh.position.setZ(player.get().position.z);
     this.direction = camera.getWorldDirection(this.direction);
-    // this.mesh.translateOnAxis(camera.getWorldDirection())
   }
 
   update() {
