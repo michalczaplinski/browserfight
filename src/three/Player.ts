@@ -1,5 +1,5 @@
-import { Object3D, Vector3, Mesh, CubeGeometry, MeshPhongMaterial, LineBasicMaterial, Geometry, Line } from "three";
-import { BFObject } from "../types";
+import { Object3D, Vector3, Mesh, CubeGeometry, MeshPhongMaterial } from "three";
+import { BFObject, BFDocument } from "../types";
 import Camera from "./Camera";
 
 export default class Player implements BFObject {

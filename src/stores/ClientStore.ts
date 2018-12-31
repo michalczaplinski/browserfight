@@ -1,18 +1,24 @@
 import Peer from "peerjs";
 import { observable } from "mobx";
 import uuid from "uuid";
-import { ClientGameState, GameState, DataFromClient, isBFEvent, DataFromServer } from '../types';
+import {
+  ClientGameState,
+  GameState,
+  ClientData,
+  isCreatePlayerEvent
+} from '../types';
 
 class ClientStore {
   id: string = uuid.v1()
+
+  @observable newPlayer: string = ""
+  @observable error: any;
+  @observable loading: boolean = true;
   @observable gameState: GameState = {
     [this.id]: {
       x: 0, y: 0, z: 0
     }
   }
-  @observable error: any;
-  @observable loading: boolean = true;
-
   sendInterval: any;
   connection: Peer.DataConnection;
   peer: Peer;
@@ -26,20 +32,26 @@ class ClientStore {
       this.loading = false;
       console.debug(`Connection to server established`)
 
-      this.connection.send("Hello from client");
+      this.connection.send({ kind: "Hello from client", id: this.id });
 
-      this.connection.on("data", (data: DataFromServer) => {
+      this.connection.on("data", (data: ClientData) => {
         if (data === 'Hello from server') {
           console.debug(`Received handshake from server: ${data}`);
+          this.newPlayer = serverId;
           return;
         }
-        if (isBFEvent(data)) {
-          console.log(data);
-          return
+        if (isCreatePlayerEvent(data)) {
+          if (data.id !== this.id) {
+            this.newPlayer = data.id;
+          }
+          return;
         }
 
-        delete data[this.peer.id]
-        this.gameState = { ...data, ...this.gameState };
+        delete data[this.id]
+
+        Object.keys(data).forEach(playerId => {
+          this.gameState[playerId] = data[playerId]
+        })
       });
 
       this.connection.on("error", (err: any) => {
@@ -61,7 +73,7 @@ class ClientStore {
       console.error(err);
     });
 
-    this.sendInterval = setInterval(() => this.send(this.gameState[this.peer.id]))
+    this.sendInterval = setInterval(() => this.send(this.gameState[this.id]))
 
   }
 
@@ -70,7 +82,7 @@ class ClientStore {
   }
 
   updateState(data: ClientGameState) {
-    this.gameState[this.peer.id] = data;
+    this.gameState[this.id] = data;
   }
 }
 

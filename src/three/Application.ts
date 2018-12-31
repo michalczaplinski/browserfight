@@ -12,6 +12,7 @@ import ServerStore from '../stores/ServerStore';
 import { ResizeListener } from './ResizeListener';
 import Crosshair from './Crosshair';
 import addPointerLock from '../utils/pointerLock';
+import { reaction } from 'mobx';
 
 export default class Application {
 
@@ -21,7 +22,7 @@ export default class Application {
   store: ClientStore | ServerStore;
   camera: Camera;
   player: Player;
-  players: Mesh[]
+  players: { [key: string]: Mesh }
   floor: Floor;
   light: Light;
   crosshair: Crosshair;
@@ -42,7 +43,7 @@ export default class Application {
     this.camera.add(this.crosshair.get());
 
     this.player = new Player(this.camera)
-    this.players = []
+    this.players = {}
     this.floor = new Floor();
     this.light = new Light();
 
@@ -57,6 +58,12 @@ export default class Application {
       //TODO: destroy the bullet object after a few secs 
       // in order to garbage collect
     }
+
+    reaction(
+      () => this.store.newPlayer,
+      () => {
+        this.createNewPlayer(this.store.newPlayer)
+      })
 
     window.addEventListener('click', shootBullet, false);
     addPointerLock();
@@ -90,9 +97,17 @@ export default class Application {
     });
     const { x, y, z } = this.player.get().position;
     this.store.updateState({ x, y, z })
+
+    Object.keys(this.players).forEach(playerId => {
+      if (this.store.gameState[playerId]) {
+        this.players[playerId].position.setX(this.store.gameState[playerId].x)
+        this.players[playerId].position.setY(this.store.gameState[playerId].y)
+        this.players[playerId].position.setZ(this.store.gameState[playerId].z)
+      }
+    })
   }
 
-  createNewPlayer = () => {
+  createNewPlayer = (id: string) => {
     const avatar = new Mesh(
       new CubeGeometry(20, 20, 20),
       new MeshPhongMaterial({ color: 0x222222 })
@@ -100,6 +115,7 @@ export default class Application {
     avatar.position.y = 0;
     avatar.position.z = -10;
 
-    this.players.push(avatar);
+    this.players[id] = avatar;
+    this.scene.add(avatar);
   }
 }

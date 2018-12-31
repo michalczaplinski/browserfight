@@ -1,17 +1,25 @@
-import Peer, { DataConnection } from "peerjs";
+import Peer from "peerjs";
 import { observable } from "mobx";
 import uuid from 'uuid';
-import { GameState, IConnections, ClientGameState, GameStateFromServer, DataFromServer, DataFromClient, isBFEvent } from '../types';
+import {
+  GameState,
+  IConnections,
+  ClientGameState,
+  GameStateFromServer,
+  ServerData,
+  isHandshakeFromClient,
+  CreatePlayerEvent
+} from '../types';
 
 
 export class ServerStore {
   id: string = uuid.v1();
 
+  @observable newPlayer: string = ""
+  @observable error: any;
   @observable gameState: GameState = {
     [this.id]: { x: 0, y: 0, z: 0 }
   }
-  @observable error: any;
-
   connections: IConnections = {};
   peer: Peer;
   broadcastInterval: any;
@@ -32,14 +40,12 @@ export class ServerStore {
           1000 / 30);
       });
 
-      conn.on("data", (data: DataFromClient) => {
-        if (data === 'Hello from client') {
-          console.debug(`Received handshake from client: ${data}`);
+      conn.on("data", (data: ServerData) => {
+        if (isHandshakeFromClient(data)) {
+          console.debug(`Received handshake from client: ${data.kind}`);
+          this.broadcast({ kind: 'createPlayer', id: data.id });
+          this.newPlayer = data.id;
           return;
-        }
-        if (isBFEvent(data)) {
-          console.log(data);
-          return
         }
 
         this.gameState[conn.peer] = { ...data };
@@ -59,14 +65,14 @@ export class ServerStore {
     });
   }
 
-  broadcast(data: GameStateFromServer) {
+  broadcast(data: GameStateFromServer | CreatePlayerEvent) {
     Object.values(this.connections).forEach(conn => {
       conn.send(data);
     });
   }
 
   updateState(data: ClientGameState) {
-    this.gameState[this.peer.id] = data;
+    this.gameState[this.id] = data;
   }
 }
 
