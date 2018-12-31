@@ -50,6 +50,10 @@ export default class Player implements BFObject {
   }
 
   updateMouse = () => {
+    const bfdocument: BFDocument = document
+    if (!bfdocument.pointerLockElement) {
+      return
+    }
     this.yawObject.rotation.y -= this.movementX * 0.002;
     this.pitchObject.rotation.x -= this.movementY * 0.002;
     this.pitchObject.rotation.x = Math.max(

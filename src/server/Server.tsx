@@ -51,7 +51,13 @@ class Server extends Component<Props, {}> {
             </a>
           </div>
           <span hidden id="client-id">{store.id}</span>
-          <button onClick={() => this.stop()}> stop server </button>
+          <button onClick={e => { 
+            e.stopPropagation(); 
+            this.stop();
+          }}
+          > 
+            stop server
+          </button>
           <div> connected clients: </div>
           {Object.entries(store.gameState).map(([key, value]) => (
             <div key= { key }>

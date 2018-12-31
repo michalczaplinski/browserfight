@@ -2,13 +2,13 @@ import { DataConnection } from "peerjs";
 import { Object3D } from 'three';
 
 export interface BFDocument extends Document {
-    pointerLockElement: Element
-    onpointerlockchange: Function
-    pointerlockchange: Event
+    pointerLockElement?: Element
+    onpointerlockchange?: Function
+    pointerlockchange?: Event
 
-    mozPointerLockElement: Element
-    onmozpointerlockchange: Function
-    mozpointerlockchange: Event
+    mozPointerLockElement?: Element
+    onmozpointerlockchange?: Function
+    mozpointerlockchange?: Event
 }
 
 export interface BFElement extends Element {
@@ -38,20 +38,26 @@ export interface GameState {
     }
 }
 
-export interface IConnections {
-    [propName: string]: DataConnection
-}
-
-
 export interface BFObject {
     get?: () => Object3D
     update?: () => void
 }
 
-type HandshakeFromClient = "Hello from client"
-type HandshakeFromServer = "Hello from server"
+export interface IConnections {
+    [propName: string]: DataConnection
+}
 
-type createPlayerEvent = { kind: 'createPlayer', id: string }
+export type HandshakeFromClient = { kind: "Hello from client", id: string }
+export function isHandshakeFromClient(event: ServerData): event is HandshakeFromClient {
+    return (event as HandshakeFromClient).kind === 'Hello from client'
+}
 
-export type DataFromServer = GameStateFromServer | HandshakeFromServer | createPlayerEvent
-export type DataFromClient = ClientGameState | HandshakeFromClient
+export type HandshakeFromServer = "Hello from server"
+
+export type CreatePlayerEvent = { kind: 'createPlayer', id: string }
+export function isCreatePlayerEvent(event: ClientData): event is CreatePlayerEvent {
+    return (event as CreatePlayerEvent).kind === 'createPlayer'
+}
+
+export type ClientData = GameStateFromServer | HandshakeFromServer | CreatePlayerEvent
+export type ServerData = ClientGameState | HandshakeFromClient
