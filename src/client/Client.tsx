@@ -54,7 +54,7 @@ class Client extends Component<Props, {}> {
           <div> Connected to server with id: 
             <span id="server-id">{serverId}</span> 
           </div>
-          <div> Own ID: <span id="client-id">{store.peer.id}</span> </div>
+          <div> Own ID: <span id="client-id">{store.id}</span> </div>
         </HUD>
         <div ref={this.createApplication}/>
       </div>
