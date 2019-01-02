@@ -1,4 +1,4 @@
-import { Scene, WebGLRenderer, Fog, Mesh, CubeGeometry, MeshPhongMaterial } from 'three';
+import { Scene, WebGLRenderer, Fog, Mesh, CubeGeometry, MeshPhongMaterial, Raycaster, Intersection } from 'three';
 
 import Camera from './Camera';
 import Player from './Player';
@@ -16,36 +16,28 @@ import { reaction } from 'mobx';
 
 export default class Application {
 
-  renderer: WebGLRenderer;
-  objects: BFObject[];
-  scene: Scene;
+  renderer: WebGLRenderer = new WebGLRenderer();
+  objects: BFObject[] = [];
+  scene: Scene = new Scene();
   store: ClientStore | ServerStore;
-  camera: Camera;
-  player: Player;
-  players: { [key: string]: Mesh }
-  floor: Floor;
-  light: Light;
-  crosshair: Crosshair;
+  camera: Camera = new Camera();
+  player: Player = new Player(this.camera);
+  players: { [key: string]: Mesh } = {}
+  floor: Floor = new Floor();
+  light: Light = new Light();
+  raycaster: Raycaster = new Raycaster();
+  crosshair: Crosshair = new Crosshair();
+  intersects: Intersection[] = [];
 
   constructor(node: BFElement, store: ClientStore | ServerStore) {
     this.store = store;
 
-    this.renderer = new WebGLRenderer();
     this.renderer.setClearColor(0xffffff);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
 
-    this.objects = [];
-    this.scene = new Scene();
     this.scene.fog = new Fog(0xffffff, 0, 2000);
-    this.camera = new Camera();
-    this.crosshair = new Crosshair();
     this.camera.add(this.crosshair.get());
-
-    this.player = new Player(this.camera)
-    this.players = {}
-    this.floor = new Floor();
-    this.light = new Light();
 
     this.add(this.player);
     this.add(this.floor);
@@ -82,9 +74,7 @@ export default class Application {
   }
 
   run = () => {
-    requestAnimationFrame(() => {
-      this.run();
-    });
+    requestAnimationFrame(this.run);
     this.update();
     this.renderer.render(this.scene, this.camera);
   }
@@ -97,6 +87,12 @@ export default class Application {
     });
     const { x, y, z } = this.player.get().position;
     this.store.updateState({ x, y, z })
+
+    this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
+    this.intersects = this.raycaster.intersectObjects(Object.values(this.players));
+    for (var i = 0; i < this.intersects.length; i++) {
+      console.log(this.intersects[i])
+    }
 
     Object.keys(this.players).forEach(playerId => {
       if (this.store.gameState[playerId]) {
