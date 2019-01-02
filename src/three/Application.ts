@@ -110,8 +110,14 @@ export default class Application {
   createNewPlayer = (id: string) => {
     const avatar = new Mesh(
       new CubeGeometry(20, 20, 20),
-      new MeshPhongMaterial({ color: 0x222222 })
-    );
+      new MeshPhongMaterial(
+        {
+          color: `rgb(
+            ${Math.ceil(Math.random() * 155 + 100)}, 
+            ${Math.ceil(Math.random() * 155 + 100)}, 
+            ${Math.ceil(Math.random() * 155 + 100)}
+          )`
+        }));
     avatar.position.y = 0;
     avatar.position.z = -10;
 
