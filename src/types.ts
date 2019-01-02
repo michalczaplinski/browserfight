@@ -39,6 +39,7 @@ export interface GameState {
 }
 
 export interface BFObject {
+    id: string;
     get?: () => Object3D
     update?: () => void
 }

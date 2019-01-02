@@ -1,4 +1,4 @@
-import { Scene, WebGLRenderer, Fog, Mesh, CubeGeometry, MeshPhongMaterial, Raycaster, Intersection } from 'three';
+import { Scene, WebGLRenderer, Fog, Mesh, CubeGeometry, MeshPhongMaterial, Raycaster, Intersection, Object3D } from 'three';
 
 import Camera from './Camera';
 import Player from './Player';
@@ -35,9 +35,7 @@ export default class Application {
     this.renderer.setClearColor(0xffffff);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-
     this.scene.fog = new Fog(0xffffff, 0, 2000);
-    // this.camera.add(this.crosshair.get());
 
     this.add(this.player);
     this.add(this.floor);
@@ -50,9 +48,13 @@ export default class Application {
       if (!bfdocument.pointerLockElement) {
         return
       }
-      this.add(new Bullet(this.player, this.camera));
-      //TODO: destroy the bullet object after a few secs 
-      // in order to garbage collect
+      const bullet = new Bullet(this.player, this.camera)
+      this.add(bullet);
+
+      setTimeout(() => {
+        this.objects = this.objects.filter(obj => obj.id !== bullet.id);
+        this.scene.remove(bullet.get());
+      }, 2000)
     }
 
     reaction(
@@ -70,7 +72,7 @@ export default class Application {
     }
   }
 
-  add(obj: BFObject) {
+  add = (obj: BFObject) => {
     this.objects.push(obj);
     if (typeof obj.get === 'function') {
       this.scene.add(obj.get());

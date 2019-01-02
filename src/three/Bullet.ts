@@ -1,9 +1,12 @@
 import { BoxGeometry, MeshBasicMaterial, Mesh, PerspectiveCamera, Vector3 } from "three";
 import Player from "./Player";
 import Camera from "./Camera";
+import uuid from 'uuid';
+import { BFObject } from "../types";
 
-export default class Bullet {
+export default class Bullet implements BFObject {
 
+  id: string = uuid.v4();
   geometry: BoxGeometry;
   material: MeshBasicMaterial;
   mesh: Mesh;

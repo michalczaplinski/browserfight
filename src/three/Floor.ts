@@ -1,7 +1,10 @@
 import { PlaneGeometry, Color, Matrix4, MeshBasicMaterial, Mesh, VertexColors } from "three";
+import uuid from 'uuid';
+import { BFObject } from "../types";
 
-export default class Floor {
+export default class Floor implements BFObject {
 
+  id: string = uuid.v4();
   geometry: PlaneGeometry;
   material: MeshBasicMaterial;
   mesh: Mesh;

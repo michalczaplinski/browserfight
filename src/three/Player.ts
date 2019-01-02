@@ -1,9 +1,11 @@
 import { Object3D, Vector3 } from "three";
 import { BFObject, BFDocument } from "../types";
 import Camera from "./Camera";
+import uuid from 'uuid';
 
 export default class Player implements BFObject {
 
+  id = uuid.v4();
   pitchObject: Object3D;
   yawObject: Object3D;
   PI_2: number;

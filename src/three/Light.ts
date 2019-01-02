@@ -1,8 +1,10 @@
 import THREE, { HemisphereLight } from 'three'
 import { BFObject } from '../types';
+import uuid from 'uuid';
 
 export default class Light implements BFObject {
 
+    id: string = uuid.v4();
     hemiLight: HemisphereLight;
 
     constructor() {
