@@ -26,19 +26,19 @@ export default class Floor {
     for (let i = 0, l = this.geometry.faces.length; i < l; i++) {
       let face = this.geometry.faces[i];
       face.vertexColors[0] = new Color().setHSL(
-        Math.random() * 0.3 + 0.5,
-        0.75,
-        Math.random() * 0.25 + 0.75
+        Math.random() * 0.5 + 0.3,
+        0.9,
+        Math.random() * 0.15 + 0.75
       );
       face.vertexColors[1] = new Color().setHSL(
-        Math.random() * 0.3 + 0.5,
-        0.75,
-        Math.random() * 0.25 + 0.75
+        Math.random() * 0.5 + 0.3,
+        0.9,
+        Math.random() * 0.15 + 0.75
       );
       face.vertexColors[2] = new Color().setHSL(
-        Math.random() * 0.3 + 0.5,
-        0.75,
-        Math.random() * 0.25 + 0.75
+        Math.random() * 0.5 + 0.3,
+        0.9,
+        Math.random() * 0.15 + 0.75
       );
     }
   }

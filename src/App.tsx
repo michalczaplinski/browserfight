@@ -1,15 +1,10 @@
-import React, { Component, MouseEvent } from "react";
+import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Server from "./server/Server";
 import Client from "./client/Client";
 import addPointerLock from "./utils/pointerLock";
-
-const Home = ({ start } : { start: () => void }) => (
-  <div>
-    <button id="start-game" onClick={() => start()}> start </button>
-  </div>
-);
+import Home from './components/Home';
 
 class App extends Component {
   state = {

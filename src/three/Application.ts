@@ -6,7 +6,7 @@ import Floor from './Floor';
 import Light from './Light';
 import Bullet from './Bullet';
 
-import { BFObject, BFElement } from '../types';
+import { BFObject, BFElement, BFDocument } from '../types';
 import ClientStore from '../stores/ClientStore';
 import ServerStore from '../stores/ServerStore';
 import { ResizeListener } from './ResizeListener';
@@ -37,7 +37,7 @@ export default class Application {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
 
     this.scene.fog = new Fog(0xffffff, 0, 2000);
-    this.camera.add(this.crosshair.get());
+    // this.camera.add(this.crosshair.get());
 
     this.add(this.player);
     this.add(this.floor);
@@ -46,6 +46,10 @@ export default class Application {
     new ResizeListener(this.camera, this.renderer)
 
     const shootBullet = () => {
+      const bfdocument: BFDocument = document
+      if (!bfdocument.pointerLockElement) {
+        return
+      }
       this.add(new Bullet(this.player, this.camera));
       //TODO: destroy the bullet object after a few secs 
       // in order to garbage collect
