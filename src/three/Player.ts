@@ -1,4 +1,4 @@
-import { Object3D, Vector3, Mesh, CubeGeometry, MeshPhongMaterial } from "three";
+import { Object3D, Vector3 } from "three";
 import { BFObject, BFDocument } from "../types";
 import Camera from "./Camera";
 
@@ -15,7 +15,6 @@ export default class Player implements BFObject {
   moveLeft: boolean = false;
   moveRight: boolean = false;
   prevTime: any;
-  avatar: Mesh;
 
   constructor(camera: Camera) {
     this.pitchObject = new Object3D();
@@ -29,16 +28,6 @@ export default class Player implements BFObject {
     this.velocity = new Vector3();
 
     this.prevTime = performance.now();
-
-    // this is the visible player's mesh
-    this.avatar = new Mesh(
-      new CubeGeometry(20, 20, 20),
-      new MeshPhongMaterial({ color: 0x222222 })
-    );
-    this.avatar.position.y = 0;
-    this.avatar.position.z = -10;
-
-    this.yawObject.add(this.avatar);
 
     document.addEventListener('keydown', this.onKeyDown, false);
     document.addEventListener('keyup', this.onKeyUp, false);
