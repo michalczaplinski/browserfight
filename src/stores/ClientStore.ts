@@ -5,7 +5,9 @@ import {
   ClientGameState,
   GameState,
   ClientData,
-  isCreatePlayerEvent
+  isCreatePlayerEvent,
+  Position,
+  isDealDamageEvent
 } from '../types';
 
 class ClientStore {
@@ -16,7 +18,7 @@ class ClientStore {
   @observable loading: boolean = true;
   @observable gameState: GameState = {
     [this.id]: {
-      x: 0, y: 0, z: 0
+      x: 0, y: 0, z: 0, health: 100
     }
   }
   sendInterval: any;
@@ -44,6 +46,10 @@ class ClientStore {
           if (data.id !== this.id) {
             this.newPlayer = data.id;
           }
+          return;
+        }
+        if (isDealDamageEvent(data)) {
+          this.gameState[data.id].health -= 10
           return;
         }
 
@@ -81,8 +87,10 @@ class ClientStore {
     this.connection.send(data);
   }
 
-  updateState(data: ClientGameState) {
-    this.gameState[this.id] = data;
+  updatePosition(data: Position) {
+    this.gameState[this.id].x = data.x;
+    this.gameState[this.id].y = data.y;
+    this.gameState[this.id].z = data.z;
   }
 }
 

@@ -16,10 +16,14 @@ export interface BFElement extends Element {
     mozRequestPointerLock: Function
 }
 
-export interface ClientGameState {
+export interface Position {
     x: number
     y: number
     z: number
+}
+
+export interface ClientGameState extends Position {
+    health: number
 }
 
 export interface GameStateFromServer {
@@ -27,6 +31,7 @@ export interface GameStateFromServer {
         x: number
         y: number
         z: number
+        health: number
     }
 }
 
@@ -34,7 +39,8 @@ export interface GameState {
     [key: string]: {
         x: number
         y: number
-        z: number
+        z: number,
+        health: number
     }
 }
 
@@ -48,17 +54,22 @@ export interface IConnections {
     [propName: string]: DataConnection
 }
 
+
+export type HandshakeFromServer = "Hello from server"
 export type HandshakeFromClient = { kind: "Hello from client", id: string }
 export function isHandshakeFromClient(event: ServerData): event is HandshakeFromClient {
     return (event as HandshakeFromClient).kind === 'Hello from client'
 }
-
-export type HandshakeFromServer = "Hello from server"
 
 export type CreatePlayerEvent = { kind: 'createPlayer', id: string }
 export function isCreatePlayerEvent(event: ClientData): event is CreatePlayerEvent {
     return (event as CreatePlayerEvent).kind === 'createPlayer'
 }
 
-export type ClientData = GameStateFromServer | HandshakeFromServer | CreatePlayerEvent
-export type ServerData = ClientGameState | HandshakeFromClient
+export type DealDamageEvent = { kind: 'dealDamage', id: string, amount: number }
+export function isDealDamageEvent(event: ClientData | ServerData): event is DealDamageEvent {
+    return (event as DealDamageEvent).kind === 'dealDamage'
+}
+
+export type ClientData = GameStateFromServer | HandshakeFromServer | CreatePlayerEvent | DealDamageEvent
+export type ServerData = ClientGameState | HandshakeFromClient | DealDamageEvent

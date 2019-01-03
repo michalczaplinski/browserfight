@@ -51,6 +51,11 @@ export default class Application {
       const bullet = new Bullet(this.player, this.camera)
       this.add(bullet);
 
+      this.intersects.forEach(player => {
+        const id = player.object.uuid;
+
+      });
+
       setTimeout(() => {
         this.objects = this.objects.filter(obj => obj.id !== bullet.id);
         this.scene.remove(bullet.get());
@@ -92,7 +97,7 @@ export default class Application {
       }
     });
     const { x, y, z } = this.player.get().position;
-    this.store.updateState({ x, y, z })
+    this.store.updatePosition({ x, y, z })
 
     this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
     this.intersects = this.raycaster.intersectObjects(Object.values(this.players));
@@ -122,6 +127,7 @@ export default class Application {
         }));
     avatar.position.y = 0;
     avatar.position.z = -10;
+    avatar.uuid = id;
 
     this.players[id] = avatar;
     this.scene.add(avatar);

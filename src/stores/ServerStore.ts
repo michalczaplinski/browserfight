@@ -4,11 +4,12 @@ import uuid from 'uuid';
 import {
   GameState,
   IConnections,
-  ClientGameState,
+  Position,
   GameStateFromServer,
   ServerData,
   isHandshakeFromClient,
-  CreatePlayerEvent
+  CreatePlayerEvent,
+  isDealDamageEvent
 } from '../types';
 
 
@@ -18,7 +19,7 @@ export class ServerStore {
   @observable newPlayer: string = ""
   @observable error: any;
   @observable gameState: GameState = {
-    [this.id]: { x: 0, y: 0, z: 0 }
+    [this.id]: { x: 0, y: 0, z: 0, health: 100 }
   }
   connections: IConnections = {};
   peer: Peer;
@@ -47,6 +48,10 @@ export class ServerStore {
           this.newPlayer = data.id;
           return;
         }
+        if (isDealDamageEvent(data)) {
+          this.gameState[data.id].health -= 10;
+          return;
+        }
 
         this.gameState[conn.peer] = { ...data };
 
@@ -71,8 +76,10 @@ export class ServerStore {
     });
   }
 
-  updateState(data: ClientGameState) {
-    this.gameState[this.id] = data;
+  updatePosition(data: Position) {
+    this.gameState[this.id].x = data.x;
+    this.gameState[this.id].y = data.y;
+    this.gameState[this.id].z = data.z;
   }
 }
 
