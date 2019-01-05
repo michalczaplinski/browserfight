@@ -6,7 +6,7 @@ function eqSet(as: Set<string>, bs: Set<string>) {
   return true;
 }
 
-describe("Browserfight", () => {
+describe("Browserwhack", () => {
   // let serverId: string;
   let clientURL: string;
   let clientId: string;
