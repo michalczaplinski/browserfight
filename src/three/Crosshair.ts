@@ -14,7 +14,7 @@ class Crosshair {
       })
     );
 
-    this.crosshair.position.z = -1;
+    this.crosshair.position.z = -2;
 
   }
 
