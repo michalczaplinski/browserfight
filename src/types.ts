@@ -22,24 +22,33 @@ export interface Position {
     z: number
 }
 
-export interface ClientGameState extends Position {
+export interface ClientGameState {
+    position: {
+        x: number
+        y: number
+        z: number
+    }
     health: number
 }
 
 export interface GameStateFromServer {
     [key: string]: {
-        x: number
-        y: number
-        z: number
+        position: {
+            x: number
+            y: number
+            z: number
+        }
         health: number
     }
 }
 
 export interface GameState {
     [key: string]: {
-        x: number
-        y: number
-        z: number,
+        position: {
+            x: number
+            y: number
+            z: number
+        }
         health: number
     }
 }
@@ -66,10 +75,15 @@ export function isCreatePlayerEvent(event: ClientData): event is CreatePlayerEve
     return (event as CreatePlayerEvent).kind === 'createPlayer'
 }
 
-export type DealDamageEvent = { kind: 'dealDamage', id: string, amount: number }
+export type DealDamageEvent = { kind: 'dealDamage', from: string, id: string, amount: number }
 export function isDealDamageEvent(event: ClientData | ServerData): event is DealDamageEvent {
     return (event as DealDamageEvent).kind === 'dealDamage'
 }
 
-export type ClientData = GameStateFromServer | HandshakeFromServer | CreatePlayerEvent | DealDamageEvent
-export type ServerData = ClientGameState | HandshakeFromClient | DealDamageEvent
+export type UpdatePosition = { kind: 'updatePosition', id: string, position: { x: number, y: number, z: number } }
+export function isUpdatePosition(event: ClientData | ServerData): event is UpdatePosition {
+    return (event as UpdatePosition).kind === 'updatePosition'
+}
+
+export type ClientData = HandshakeFromServer | CreatePlayerEvent | DealDamageEvent | UpdatePosition
+export type ServerData = HandshakeFromClient | DealDamageEvent | UpdatePosition

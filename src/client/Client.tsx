@@ -6,7 +6,7 @@ import { observer } from "mobx-react";
 import Spinner from "../components/Spinner";
 import Store from "../stores/ClientStore";
 
-import Application from '../three/Application';
+import { Application as ClientApplication } from '../three/Application';
 import { BFElement } from "../types";
 import HUD from "../components/HUD";
 
@@ -26,7 +26,7 @@ class Client extends Component<Props, {}> {
   }
 
   createApplication = (element: HTMLDivElement & BFElement) => {
-    let app = new Application(element, this.store);
+    let app = new ClientApplication(element, this.store);
   }
 
   render() {
@@ -54,7 +54,16 @@ class Client extends Component<Props, {}> {
           <div> Connected to server with id: 
             <span id="server-id">{serverId}</span> 
           </div>
-          <div> Own ID: <span id="client-id">{store.id}</span> </div>
+          <div> Own ID: 
+            <span id="client-id">{store.id}</span>
+            {Object.entries(store.gameState).map(([key, value]) => (
+              <div key={key}>
+                <div > {key} </div>
+                <div> <b>health:</b> {value.health}</div>
+                <br/>
+              </div>
+            ))}
+          </div>
         </HUD>
         <div ref={this.createApplication}/>
       </div>

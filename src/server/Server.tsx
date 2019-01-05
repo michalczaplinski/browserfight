@@ -4,7 +4,7 @@ import { observer } from "mobx-react";
 
 import Store from "../stores/ServerStore";
 import Spinner from "../components/Spinner";
-import Application from "../three/Application";
+import { Application as ServerApplication } from "../three/Application";
 import { BFElement } from "../types";
 import HUD from "../components/HUD";
 
@@ -24,7 +24,7 @@ class Server extends Component<Props, {}> {
   }
 
   createApplication = (element: HTMLDivElement & BFElement) => {
-    let app = new Application(element, this.store);
+    let app = new ServerApplication(element, this.store);
   }
 
   stop() {
@@ -58,13 +58,12 @@ class Server extends Component<Props, {}> {
           > 
             stop server
           </button>
-          <div> connected clients: </div>
+          <div> players: </div>
           {Object.entries(store.gameState).map(([key, value]) => (
             <div key= { key }>
               <div > {key} </div>
-              <div> X: {value.x} </div>
-              <div> Y: {value.y} </div>
-              <div> Z: {value.z} </div>
+              <div> <b>health:</b> {value.health}</div>
+              <br/>
             </div>
           ))}
         </HUD>

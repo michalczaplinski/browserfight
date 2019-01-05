@@ -1,17 +1,18 @@
 import Peer from "peerjs";
-import { observable } from "mobx";
+import { observable, action, configure } from "mobx";
 import uuid from 'uuid';
 import {
   GameState,
   IConnections,
   Position,
-  GameStateFromServer,
   ServerData,
   isHandshakeFromClient,
-  CreatePlayerEvent,
-  isDealDamageEvent
+  isDealDamageEvent,
+  isUpdatePosition,
+  ClientData
 } from '../types';
 
+// configure({ enforceActions: 'always' })
 
 export class ServerStore {
   id: string = uuid.v1();
@@ -19,11 +20,11 @@ export class ServerStore {
   @observable newPlayer: string = ""
   @observable error: any;
   @observable gameState: GameState = {
-    [this.id]: { x: 0, y: 0, z: 0, health: 100 }
+    [this.id]: { position: { x: 0, y: 30, z: 0 }, health: 100 }
   }
   connections: IConnections = {};
   peer: Peer;
-  broadcastInterval: any;
+  sendInterval: any;
 
   constructor() {
 
@@ -34,26 +35,33 @@ export class ServerStore {
 
       conn.on("open", () => {
         console.debug(`Connection to client established`);
-        conn.send("Hello from server");
+        this.send("Hello from server");
 
-        this.broadcastInterval = setInterval(
-          () => this.broadcast(this.gameState),
-          1000 / 30);
+        this.sendInterval = setInterval(
+          () => this.send({ kind: 'updatePosition', id: this.id, position: this.gameState[this.id].position }),
+          50);
       });
 
       conn.on("data", (data: ServerData) => {
         if (isHandshakeFromClient(data)) {
           console.debug(`Received handshake from client: ${data.kind}`);
-          this.broadcast({ kind: 'createPlayer', id: data.id });
+          this.send({ kind: 'createPlayer', id: data.id });
           this.newPlayer = data.id;
-          return;
-        }
-        if (isDealDamageEvent(data)) {
-          this.gameState[data.id].health -= 10;
+          this.gameState[data.id] = { position: { x: 0, y: 30, z: 0 }, health: 100 }
           return;
         }
 
-        this.gameState[conn.peer] = { ...data };
+        // we accept the dealDamage events from all players
+        if (isDealDamageEvent(data)) {
+          this.send(data);
+          this.gameState[data.id].health -= data.amount;
+          return;
+        }
+
+        if (isUpdatePosition(data)) {
+          this.send(data);
+          this.gameState[data.id].position = data.position;
+        }
 
       });
 
@@ -70,16 +78,16 @@ export class ServerStore {
     });
   }
 
-  broadcast(data: GameStateFromServer | CreatePlayerEvent) {
+  send(data: ClientData) {
     Object.values(this.connections).forEach(conn => {
       conn.send(data);
     });
   }
 
   updatePosition(data: Position) {
-    this.gameState[this.id].x = data.x;
-    this.gameState[this.id].y = data.y;
-    this.gameState[this.id].z = data.z;
+    this.gameState[this.id].position.x = data.x;
+    this.gameState[this.id].position.y = data.y;
+    this.gameState[this.id].position.z = data.z;
   }
 }
 

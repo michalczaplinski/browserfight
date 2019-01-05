@@ -1,4 +1,4 @@
-import { Scene, WebGLRenderer, Fog, Mesh, CubeGeometry, MeshPhongMaterial, Raycaster, Intersection, Object3D } from 'three';
+import { Scene, WebGLRenderer, Fog, Mesh, CubeGeometry, MeshPhongMaterial, Raycaster, Intersection } from 'three';
 
 import Camera from './Camera';
 import Player from './Player';
@@ -14,7 +14,7 @@ import Crosshair from './Crosshair';
 import addPointerLock from '../utils/pointerLock';
 import { reaction } from 'mobx';
 
-export default class Application {
+export class Application {
 
   renderer: WebGLRenderer = new WebGLRenderer();
   objects: BFObject[] = [];
@@ -37,30 +37,12 @@ export default class Application {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.scene.fog = new Fog(0xffffff, 0, 2000);
 
+    this.camera.add(this.crosshair.get());
     this.add(this.player);
     this.add(this.floor);
     this.add(this.light);
 
     new ResizeListener(this.camera, this.renderer)
-
-    const shootBullet = () => {
-      const bfdocument: BFDocument = document
-      if (!bfdocument.pointerLockElement) {
-        return
-      }
-      const bullet = new Bullet(this.player, this.camera)
-      this.add(bullet);
-
-      this.intersects.forEach(player => {
-        const id = player.object.uuid;
-
-      });
-
-      setTimeout(() => {
-        this.objects = this.objects.filter(obj => obj.id !== bullet.id);
-        this.scene.remove(bullet.get());
-      }, 2000)
-    }
 
     reaction(
       () => this.store.newPlayer,
@@ -68,13 +50,34 @@ export default class Application {
         this.createNewPlayer(this.store.newPlayer)
       })
 
-    window.addEventListener('click', shootBullet, false);
     addPointerLock();
+
+    window.addEventListener('click', this.shootBullet, false);
 
     if (node) {
       node.appendChild(this.renderer.domElement);
       this.run();
     }
+  }
+
+  shootBullet = () => {
+    const bfdocument: BFDocument = document
+    if (!bfdocument.pointerLockElement) {
+      return
+    }
+    const bullet = new Bullet(this.player, this.camera)
+    this.add(bullet);
+
+    this.intersects.forEach(player => {
+      const id = player.object.uuid;
+      this.store.send({ kind: 'dealDamage', id, from: this.store.id, amount: 20 })
+      this.store.gameState[id].health -= 20;
+    });
+
+    setTimeout(() => {
+      this.objects = this.objects.filter(obj => obj.id !== bullet.id);
+      this.scene.remove(bullet.get());
+    }, 2000)
   }
 
   add = (obj: BFObject) => {
@@ -107,9 +110,9 @@ export default class Application {
 
     Object.keys(this.players).forEach(playerId => {
       if (this.store.gameState[playerId]) {
-        this.players[playerId].position.setX(this.store.gameState[playerId].x)
-        this.players[playerId].position.setY(this.store.gameState[playerId].y)
-        this.players[playerId].position.setZ(this.store.gameState[playerId].z)
+        this.players[playerId].position.setX(this.store.gameState[playerId].position.x)
+        this.players[playerId].position.setY(this.store.gameState[playerId].position.y)
+        this.players[playerId].position.setZ(this.store.gameState[playerId].position.z)
       }
     })
   }

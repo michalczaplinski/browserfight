@@ -2,12 +2,13 @@ import Peer from "peerjs";
 import { observable } from "mobx";
 import uuid from "uuid";
 import {
-  ClientGameState,
   GameState,
   ClientData,
   isCreatePlayerEvent,
   Position,
-  isDealDamageEvent
+  isDealDamageEvent,
+  ServerData,
+  isUpdatePosition
 } from '../types';
 
 class ClientStore {
@@ -18,7 +19,8 @@ class ClientStore {
   @observable loading: boolean = true;
   @observable gameState: GameState = {
     [this.id]: {
-      x: 0, y: 0, z: 0, health: 100
+      position: { x: 0, y: 30, z: 0 },
+      health: 100
     }
   }
   sendInterval: any;
@@ -34,7 +36,11 @@ class ClientStore {
       this.loading = false;
       console.debug(`Connection to server established`)
 
-      this.connection.send({ kind: "Hello from client", id: this.id });
+      this.send({ kind: "Hello from client", id: this.id });
+
+      this.sendInterval = setInterval(() => this.send(
+        { kind: 'updatePosition', id: this.id, position: this.gameState[this.id].position }),
+        100)
 
       this.connection.on("data", (data: ClientData) => {
         if (data === 'Hello from server') {
@@ -42,22 +48,37 @@ class ClientStore {
           this.newPlayer = serverId;
           return;
         }
+
         if (isCreatePlayerEvent(data)) {
           if (data.id !== this.id) {
             this.newPlayer = data.id;
+            this.gameState[data.id] = {
+              position: { x: 0, y: 30, z: 0 },
+              health: 100
+            }
           }
           return;
         }
+
         if (isDealDamageEvent(data)) {
-          this.gameState[data.id].health -= 10
+          if (data.from !== this.id) {
+            this.gameState[data.id].health -= data.amount;
+          }
           return;
         }
 
-        delete data[this.id]
+        if (isUpdatePosition(data) && data.id !== this.id) {
 
-        Object.keys(data).forEach(playerId => {
-          this.gameState[playerId] = data[playerId]
-        })
+          // if the player does not exist we gotta create them
+          if (typeof this.gameState[data.id] === 'undefined') {
+            this.gameState[data.id] = {
+              position: data.position,
+              health: 100
+            }
+            this.newPlayer = data.id;
+          }
+          this.gameState[data.id].position = data.position;
+        }
       });
 
       this.connection.on("error", (err: any) => {
@@ -79,18 +100,16 @@ class ClientStore {
       console.error(err);
     });
 
-    this.sendInterval = setInterval(() => this.send(this.gameState[this.id]))
-
   }
 
-  send(data: ClientGameState) {
+  send(data: ServerData) {
     this.connection.send(data);
   }
 
   updatePosition(data: Position) {
-    this.gameState[this.id].x = data.x;
-    this.gameState[this.id].y = data.y;
-    this.gameState[this.id].z = data.z;
+    this.gameState[this.id].position.x = data.x;
+    this.gameState[this.id].position.y = data.y;
+    this.gameState[this.id].position.z = data.z;
   }
 }
 
